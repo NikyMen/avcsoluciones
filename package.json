@@ -1,0 +1,20 @@
+{
+  "name": "avc-soluciones-web",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Sitio web de AVC Soluciones Empresariales E.A.S.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.7.10"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.5",
+    "tailwindcss": "^4.1.5"
+  }
+}

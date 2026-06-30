@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Home from '../components/Home.astro';
+import { getContent } from '../i18n/content';
+const t = getContent('es');
+---
+<Layout
+  lang="es"
+  htmlLang={t.htmlLang}
+  title="AVC Soluciones Empresariales | Consultoría y asesoría integral en Paraguay"
+  description="Asesoramiento integral en contabilidad, finanzas, auditoría, recursos humanos, jurídico, marketing y tecnología. Impulsamos el crecimiento de tu empresa en Paraguay."
+>
+  <Home lang="es" />
+</Layout>

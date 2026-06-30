@@ -1,0 +1,360 @@
+---
+import Icon from './Icon.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import { getContent, social, type Lang } from '../i18n/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getContent(lang);
+const wa = social.whatsapp;
+---
+<Header lang={lang} />
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section id="inicio" class="relative min-h-screen flex items-center overflow-hidden bg-ink-950 text-cream">
+    <div class="absolute inset-0">
+      <img src="/images/servicios-hero.png" alt="" class="h-full w-full object-cover opacity-35" />
+      <div class="absolute inset-0 bg-gradient-to-br from-ink-950 via-ink-950/85 to-ink-900/70"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(60%_50%_at_80%_0%,rgba(212,175,55,0.18),transparent)]"></div>
+    </div>
+
+    <div class="container-x relative py-32">
+      <div class="max-w-3xl">
+        <span class="eyebrow !text-gold-300 reveal">
+          <Icon name="sparkle" class="w-4 h-4" />{t.hero.badge}
+        </span>
+        <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] reveal">
+          {t.hero.title} <span class="text-gradient-gold">{t.hero.titleAccent}</span>.
+        </h1>
+        <p class="mt-6 text-lg text-cream/75 max-w-2xl leading-relaxed reveal">{t.hero.subtitle}</p>
+        <div class="mt-9 flex flex-wrap gap-3 reveal">
+          <a href={wa} target="_blank" rel="noopener" class="btn btn-gold">
+            <Icon name="whatsapp" class="w-5 h-5" />{t.hero.primary}
+          </a>
+          <a href="#servicios" class="btn btn-outline">{t.hero.secondary}<Icon name="arrow" class="w-4 h-4" /></a>
+        </div>
+
+        <div class="mt-16 grid grid-cols-3 gap-6 max-w-xl reveal">
+          {t.hero.stats.map((s) => (
+            <div>
+              <div class="font-display text-3xl sm:text-4xl text-gold-400">{s.value}</div>
+              <div class="mt-1 text-xs sm:text-sm text-cream/60">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <a href="#nosotros" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-cream/50 animate-bounce motion-reduce:animate-none" aria-label="scroll">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </a>
+  </section>
+
+  <!-- ============ NOSOTROS ============ -->
+  <section id="nosotros" class="py-24 bg-cream">
+    <div class="container-x">
+      <div class="grid lg:grid-cols-2 gap-14 items-start">
+        <div class="reveal">
+          <span class="eyebrow">{t.about.eyebrow}</span>
+          <h2 class="mt-4 text-3xl sm:text-4xl leading-tight">{t.about.title}</h2>
+          <p class="mt-5 text-lg text-ink-700 font-medium">{t.about.lead}</p>
+          <p class="mt-4 text-ink-600 leading-relaxed">{t.about.description}</p>
+
+          <div class="mt-8">
+            <h3 class="font-display text-lg mb-4">{t.about.valuesTitle}</h3>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+              {t.about.values.map((v) => (
+                <li class="flex items-start gap-2.5 text-sm text-ink-700">
+                  <span class="mt-0.5 grid place-items-center h-5 w-5 rounded-full bg-gold-100 text-gold-600 shrink-0">
+                    <Icon name="check" class="w-3.5 h-3.5" />
+                  </span>{v}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div class="reveal rounded-2xl bg-ink-950 text-cream p-7 shadow-soft">
+            <div class="flex items-center gap-3 text-gold-400">
+              <Icon name="target" class="w-6 h-6" />
+              <h3 class="font-display text-xl text-cream">{t.about.mission.title}</h3>
+            </div>
+            <p class="mt-3 text-cream/75 leading-relaxed text-sm">{t.about.mission.text}</p>
+          </div>
+          <div class="reveal rounded-2xl border border-gold-200 bg-white p-7 shadow-soft">
+            <div class="flex items-center gap-3 text-gold-600">
+              <Icon name="sparkle" class="w-6 h-6" />
+              <h3 class="font-display text-xl text-ink-900">{t.about.vision.title}</h3>
+            </div>
+            <p class="mt-3 text-ink-600 leading-relaxed text-sm">{t.about.vision.text}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Differentials -->
+      <div class="mt-16">
+        <h3 class="font-display text-2xl mb-8 reveal">{t.about.differentialsTitle}</h3>
+        <div class="grid md:grid-cols-3 gap-5">
+          {t.about.differentials.map((d, i) => (
+            <div class="reveal rounded-2xl bg-white p-6 shadow-soft border border-ink-700/5">
+              <div class="font-display text-3xl text-gold-300">0{i + 1}</div>
+              <h4 class="mt-3 font-display text-lg">{d.title}</h4>
+              <p class="mt-2 text-sm text-ink-600 leading-relaxed">{d.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICIOS ============ -->
+  <section id="servicios" class="py-24 bg-ink-950 text-cream relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_0%,rgba(212,175,55,0.12),transparent)]"></div>
+    <div class="container-x relative">
+      <div class="max-w-2xl reveal">
+        <span class="eyebrow !text-gold-300">{t.services.eyebrow}</span>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{t.services.title}</h2>
+        <p class="mt-4 text-cream/70">{t.services.lead}</p>
+      </div>
+
+      <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {t.services.items.map((s) => (
+          <article class="reveal group rounded-2xl border border-white/10 bg-white/[0.03] p-7 hover:bg-white/[0.06] hover:border-gold-400/40 transition-all duration-300">
+            <div class="grid place-items-center h-12 w-12 rounded-xl bg-gold-400/15 text-gold-400 group-hover:bg-gold-400 group-hover:text-ink-950 transition-colors">
+              <Icon name={s.icon} class="w-6 h-6" />
+            </div>
+            <h3 class="mt-5 font-display text-xl">{s.name}</h3>
+            <p class="mt-2.5 text-sm text-cream/65 leading-relaxed">{s.desc}</p>
+            <p class="mt-4 text-xs text-gold-300/90"><span class="uppercase tracking-wider font-semibold">{t.services.targetLabel}:</span> {s.target}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTORES ============ -->
+  <section id="sectores" class="py-24 bg-cream">
+    <div class="container-x">
+      <div class="max-w-2xl reveal">
+        <span class="eyebrow">{t.sectors.eyebrow}</span>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{t.sectors.title}</h2>
+        <p class="mt-4 text-ink-600">{t.sectors.lead}</p>
+      </div>
+
+      <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {t.sectors.items.map((s) => (
+          <article class="reveal group relative overflow-hidden rounded-2xl bg-ink-950 text-cream p-7 min-h-56 flex flex-col justify-end shadow-soft">
+            <div class="absolute inset-0 bg-[radial-gradient(80%_60%_at_70%_10%,rgba(212,175,55,0.22),transparent)] opacity-70 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute top-6 left-6 grid place-items-center h-12 w-12 rounded-xl bg-white/10 text-gold-400 group-hover:scale-110 transition-transform">
+              <Icon name={s.icon} class="w-6 h-6" />
+            </div>
+            <div class="relative">
+              <h3 class="font-display text-xl">{s.name}</h3>
+              <p class="mt-2 text-sm text-cream/65 leading-relaxed">{s.desc}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INVERSIONISTAS (parallax) ============ -->
+  <section id="inversionistas" class="relative">
+    <!-- Parallax hero -->
+    <div
+      class="relative min-h-[70vh] flex items-end bg-cover bg-center bg-fixed"
+      style="background-image: linear-gradient(to bottom, rgba(11,11,15,0.55), rgba(11,11,15,0.85)), url('/images/asuncion-inversionistas.png');"
+    >
+      <div class="container-x py-20 text-cream">
+        <span class="eyebrow !text-gold-300 reveal">
+          <Icon name="globe" class="w-4 h-4" />{t.investors.eyebrow}
+        </span>
+        <h2 class="mt-4 text-3xl sm:text-5xl max-w-3xl reveal">{t.investors.title}</h2>
+        <p class="mt-5 max-w-2xl text-lg text-cream/80 reveal">{t.investors.lead}</p>
+        <div class="mt-6 flex flex-wrap gap-2 reveal">
+          {t.investors.highlights.map((h) => (
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 text-xs font-medium backdrop-blur">
+              <Icon name="check" class="w-3.5 h-3.5 text-gold-400" />{h}
+            </span>
+          ))}
+        </div>
+        <p class="mt-8 text-xs uppercase tracking-widest text-cream/40">{t.investors.heroCaption}</p>
+      </div>
+    </div>
+
+    <!-- Executive summary + download -->
+    <div class="bg-ink-900 text-cream py-20">
+      <div class="container-x grid lg:grid-cols-3 gap-12">
+        <div class="lg:col-span-2">
+          <h3 class="font-display text-2xl sm:text-3xl reveal">{t.investors.summaryTitle}</h3>
+          <div class="mt-8 grid sm:grid-cols-2 gap-6">
+            {t.investors.summary.map((b, i) => (
+              <div class="reveal flex gap-4">
+                <div class="font-display text-2xl text-gold-400/80 shrink-0">0{i + 1}</div>
+                <div>
+                  <h4 class="font-display text-lg">{b.title}</h4>
+                  <p class="mt-1.5 text-sm text-cream/65 leading-relaxed">{b.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <aside class="reveal self-start rounded-2xl border border-gold-400/30 bg-gradient-to-br from-gold-400/10 to-transparent p-7">
+          <div class="grid place-items-center h-12 w-12 rounded-xl bg-gold-400 text-ink-950">
+            <Icon name="download" class="w-6 h-6" />
+          </div>
+          <h4 class="mt-5 font-display text-xl">{t.investors.downloadTitle}</h4>
+          <p class="mt-2 text-sm text-cream/70 leading-relaxed">{t.investors.downloadText}</p>
+          <a href="#contacto" class="btn btn-gold w-full justify-center mt-5">
+            <Icon name="download" class="w-5 h-5" />{t.investors.download}
+          </a>
+          <p class="mt-3 text-center text-xs text-cream/45">{t.investors.downloadNote}</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EQUIPO ============ -->
+  <section id="equipo" class="py-24 bg-cream">
+    <div class="container-x">
+      <div class="max-w-2xl reveal">
+        <span class="eyebrow">{t.team.eyebrow}</span>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{t.team.title}</h2>
+        <p class="mt-4 text-ink-600">{t.team.lead}</p>
+      </div>
+
+      <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {t.team.members.map((m) => (
+          <article class="reveal rounded-2xl bg-white shadow-soft border border-ink-700/5 overflow-hidden">
+            <div class="h-44 bg-gradient-to-br from-ink-900 to-ink-700 grid place-items-center">
+              <div class="grid place-items-center h-20 w-20 rounded-full bg-gold-400/20 text-gold-300 border border-gold-400/30">
+                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="font-display text-lg">{m.name}</h3>
+              <p class="text-sm text-gold-600 font-medium">{m.role}</p>
+              <p class="mt-2.5 text-sm text-ink-600 leading-relaxed">{m.bio}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="mt-6 text-sm text-ink-500 italic reveal">{t.team.note}</p>
+    </div>
+  </section>
+
+  <!-- ============ ACUERDOS (carrusel) ============ -->
+  <section id="acuerdos" class="py-24 bg-ink-950 text-cream overflow-hidden">
+    <div class="container-x">
+      <div class="max-w-2xl reveal">
+        <span class="eyebrow !text-gold-300">{t.allies.eyebrow}</span>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{t.allies.title}</h2>
+        <p class="mt-4 text-cream/70">{t.allies.lead}</p>
+      </div>
+    </div>
+
+    <div class="mt-12 relative">
+      <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-ink-950 to-transparent z-10"></div>
+      <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-ink-950 to-transparent z-10"></div>
+      <div class="marquee-track gap-5">
+        {[...t.allies.items, ...t.allies.items].map((a) => (
+          <div class="shrink-0 grid place-items-center h-24 w-52 rounded-2xl border border-white/10 bg-white/[0.03] text-cream/40 font-display text-lg">
+            {a}
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="container-x">
+      <p class="mt-8 text-sm text-cream/45 italic reveal">{t.allies.note}</p>
+    </div>
+  </section>
+
+  <!-- ============ CTA FINAL ============ -->
+  <section class="py-20 bg-cream">
+    <div class="container-x">
+      <div class="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-ink-950 to-ink-800 text-cream px-8 py-16 text-center shadow-soft">
+        <div class="absolute inset-0 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(212,175,55,0.2),transparent)]"></div>
+        <div class="relative max-w-2xl mx-auto">
+          <h2 class="text-3xl sm:text-4xl">{t.finalCta.title}</h2>
+          <p class="mt-4 text-cream/75">{t.finalCta.text}</p>
+          <a href={wa} target="_blank" rel="noopener" class="btn btn-gold mt-8">
+            <Icon name="whatsapp" class="w-5 h-5" />{t.finalCta.button}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACTO ============ -->
+  <section id="contacto" class="py-24 bg-white">
+    <div class="container-x grid lg:grid-cols-2 gap-14">
+      <div class="reveal">
+        <span class="eyebrow">{t.contact.eyebrow}</span>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{t.contact.title}</h2>
+        <p class="mt-4 text-ink-600">{t.contact.lead}</p>
+
+        <div class="mt-8 space-y-4">
+          <a href={wa} target="_blank" rel="noopener" class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4 hover:border-gold-400/50 hover:shadow-soft transition group">
+            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600 group-hover:bg-gold-400 group-hover:text-ink-950 transition"><Icon name="whatsapp" class="w-5 h-5" /></span>
+            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.whatsapp}</span><span class="font-medium">{t.contact.whatsappValue}</span></span>
+          </a>
+          <a href={`mailto:${t.contact.emailValue}`} class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4 hover:border-gold-400/50 hover:shadow-soft transition group">
+            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600 group-hover:bg-gold-400 group-hover:text-ink-950 transition"><Icon name="mail" class="w-5 h-5" /></span>
+            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.email}</span><span class="font-medium">{t.contact.emailValue}</span></span>
+          </a>
+          <div class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4">
+            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600"><Icon name="pin" class="w-5 h-5" /></span>
+            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.address}</span><span class="font-medium text-sm">{t.contact.addressValue}</span></span>
+          </div>
+          <div class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4">
+            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600"><Icon name="clock" class="w-5 h-5" /></span>
+            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.hours}</span><span class="font-medium">{t.contact.hoursValue}</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form (WhatsApp-powered) -->
+      <div class="reveal rounded-3xl bg-cream border border-ink-700/5 p-8 shadow-soft self-start">
+        <h3 class="font-display text-xl">{t.contact.formTitle}</h3>
+        <form class="mt-6 space-y-4" data-contact-form>
+          <div>
+            <label class="block text-sm font-medium text-ink-700 mb-1.5">{t.contact.name}</label>
+            <input name="name" required class="w-full rounded-xl border border-ink-700/15 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 transition" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink-700 mb-1.5">{t.contact.emailField}</label>
+            <input name="email" type="email" class="w-full rounded-xl border border-ink-700/15 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 transition" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink-700 mb-1.5">{t.contact.message}</label>
+            <textarea name="message" rows="4" required class="w-full rounded-xl border border-ink-700/15 bg-white px-4 py-3 text-sm outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 transition resize-none"></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold w-full justify-center">
+            <Icon name="whatsapp" class="w-5 h-5" />{t.contact.send}
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<Footer lang={lang} />
+
+<script define:vars={{ phone: '595991437021' }}>
+  const form = document.querySelector('[data-contact-form]');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = data.get('name') || '';
+      const email = data.get('email') || '';
+      const message = data.get('message') || '';
+      const text = `Hola AVC Soluciones, soy ${name}.%0A${message}${email ? `%0A(${email})` : ''}`;
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    });
+  }
+</script>

@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Home from '../../components/Home.astro';
+import { getContent } from '../../i18n/content';
+const t = getContent('en');
+---
+<Layout
+  lang="en"
+  htmlLang={t.htmlLang}
+  title="AVC Soluciones Empresariales | Integral business consulting in Paraguay"
+  description="Comprehensive advisory in accounting, finance, audit, human resources, legal, marketing and technology. We drive your company's growth in Paraguay."
+>
+  <Home lang="en" />
+</Layout>

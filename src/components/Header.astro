@@ -1,0 +1,145 @@
+---
+import Icon from './Icon.astro';
+import { getContent, languages, localizedPath, type Lang } from '../i18n/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getContent(lang);
+const base = lang === 'es' ? '' : `/${lang}`;
+
+const links = [
+  { href: `${base}/#nosotros`, label: t.nav.nosotros },
+  { href: `${base}/#servicios`, label: t.nav.servicios },
+  { href: `${base}/#sectores`, label: t.nav.sectores },
+  { href: `${base}/#inversionistas`, label: t.nav.inversionistas },
+  { href: `${base}/#acuerdos`, label: t.nav.acuerdos },
+  { href: `${base}/#contacto`, label: t.nav.contacto },
+];
+const current = languages.find((l) => l.code === lang)!;
+---
+<header
+  id="site-header"
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+  data-header
+>
+  <div class="container-x">
+    <div
+      class="mt-3 flex items-center justify-between gap-4 rounded-2xl px-4 py-2.5 transition-all duration-300 backdrop-blur-md"
+      data-bar
+    >
+      <!-- Logo -->
+      <a href={`${base}/`} class="flex items-center gap-2.5 shrink-0">
+        <img src="/images/logo-icon.png" alt="AVC Soluciones" class="h-9 w-9 rounded-lg object-contain" />
+        <span class="font-display font-semibold text-lg leading-none" data-logo-text>
+          AVC <span class="text-gold-400">Soluciones</span>
+        </span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden lg:flex items-center gap-6" data-nav>
+        {links.map((l) => (
+          <a href={l.href} class="text-sm font-medium opacity-80 hover:opacity-100 hover:text-gold-400 transition">{l.label}</a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <!-- Language selector -->
+        <div class="relative" data-lang>
+          <button
+            type="button"
+            class="flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-sm font-medium hover:border-gold-400/60 transition"
+            data-lang-btn
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <Icon name="globe" class="w-4 h-4" />
+            <span class="uppercase">{current.code}</span>
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div
+            class="absolute right-0 mt-2 w-44 origin-top-right rounded-xl border border-ink-700/40 bg-ink-900 text-cream shadow-soft p-1.5 opacity-0 invisible scale-95 transition-all"
+            data-lang-menu
+          >
+            {languages.map((l) => (
+              <a
+                href={localizedPath(l.code)}
+                class:list={["flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-white/10 transition", l.code === lang && 'text-gold-400']}
+              >
+                <span class="text-base">{l.flag}</span>{l.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <a href={`${base}/#contacto`} class="hidden sm:inline-flex btn btn-gold !py-2 !px-4 text-sm">{t.cta.contact}</a>
+
+        <!-- Mobile toggle -->
+        <button type="button" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition" data-menu-btn aria-label="Menu">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="lg:hidden overflow-hidden max-h-0 transition-all duration-300" data-mobile-menu>
+      <nav class="mt-2 rounded-2xl bg-ink-900 text-cream p-3 shadow-soft flex flex-col">
+        {links.map((l) => (
+          <a href={l.href} class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/10 transition" data-mobile-link>{l.label}</a>
+        ))}
+        <a href={`${base}/#contacto`} class="btn btn-gold mt-2 justify-center" data-mobile-link>{t.cta.contact}</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('[data-header]') as HTMLElement;
+  const bar = document.querySelector('[data-bar]') as HTMLElement;
+  const navLinks = document.querySelectorAll('[data-nav] a');
+  const logoText = document.querySelector('[data-logo-text]') as HTMLElement;
+
+  const applyScrolled = (scrolled: boolean) => {
+    if (scrolled) {
+      bar.classList.add('bg-ink-900/90', 'shadow-soft', 'text-cream');
+      header.classList.add('scrolled');
+    } else {
+      bar.classList.remove('bg-ink-900/90', 'shadow-soft');
+    }
+  };
+  // Start in "over-hero" (light text) mode
+  bar.classList.add('text-white');
+  const onScroll = () => applyScrolled(window.scrollY > 24);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Language dropdown
+  const langWrap = document.querySelector('[data-lang]') as HTMLElement;
+  const langBtn = document.querySelector('[data-lang-btn]') as HTMLElement;
+  const langMenu = document.querySelector('[data-lang-menu]') as HTMLElement;
+  const toggleLang = (show: boolean) => {
+    langMenu.classList.toggle('opacity-0', !show);
+    langMenu.classList.toggle('invisible', !show);
+    langMenu.classList.toggle('scale-95', !show);
+    langBtn.setAttribute('aria-expanded', String(show));
+  };
+  langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleLang(langMenu.classList.contains('invisible'));
+  });
+  document.addEventListener('click', (e) => {
+    if (!langWrap.contains(e.target as Node)) toggleLang(false);
+  });
+
+  // Mobile menu
+  const menuBtn = document.querySelector('[data-menu-btn]') as HTMLElement;
+  const mobileMenu = document.querySelector('[data-mobile-menu]') as HTMLElement;
+  let open = false;
+  const setMenu = (v: boolean) => {
+    open = v;
+    mobileMenu.style.maxHeight = v ? mobileMenu.scrollHeight + 'px' : '0px';
+  };
+  menuBtn.addEventListener('click', () => setMenu(!open));
+  document.querySelectorAll('[data-mobile-link]').forEach((l) =>
+    l.addEventListener('click', () => setMenu(false))
+  );
+</script>

@@ -7,11 +7,15 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "backend": "node server/server.mjs",
+    "serve": "node server/server.mjs",
+    "admin:create": "node server/create-admin.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.7.10"
+    "astro": "^5.7.10",
+    "pdfjs-dist": "^6.1.200"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.5",

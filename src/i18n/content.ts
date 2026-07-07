@@ -112,7 +112,7 @@ export interface Content {
 const contact = {
   whatsappValue: '+595 991 437 021',
   emailValue: 'info@avcsoluciones.com.py',
-  addressValue: 'Prof. Simeón Lombardo esq. Los Emblemas — San Lorenzo, Paraguay',
+  addressValue: 'Tres Centurias Esquina Bandera de la Patria',
   whatsappHref: 'https://wa.me/595991437021',
 };
 
@@ -165,7 +165,7 @@ const es: Content = {
       { icon: 'calculator', name: 'Asesoría contable y fiscal', desc: 'Gestión contable integral y cumplimiento tributario conforme a la normativa paraguaya.', target: 'Emprendedores, PYMES y empresas consolidadas.' },
       { icon: 'shield', name: 'Auditorías internas y externas', desc: 'Evaluación de procesos, control interno y estados financieros para transparencia y mejora continua.', target: 'Empresas medianas y grandes.' },
       { icon: 'users', name: 'Gestión de recursos humanos', desc: 'Administración del talento humano, cumplimiento laboral y desarrollo organizacional.', target: 'Empresas en crecimiento.' },
-      { icon: 'scale', name: 'Asesoría jurídica empresarial', desc: 'Apoyo legal en contratos, cumplimiento normativo y prevención de riesgos legales.', target: 'Empresas y emprendedores.' },
+      { icon: 'scale', name: 'Asesoría jurídica notarial empresarial', desc: 'Apoyo legal en contratos, cumplimiento normativo y prevención de riesgos legales.', target: 'Empresas y emprendedores.' },
       { icon: 'megaphone', name: 'Marketing y publicidad', desc: 'Estrategias de marketing digital y posicionamiento de marca orientadas a resultados.', target: 'Empresas que buscan visibilidad y crecimiento comercial.' },
       { icon: 'graduation', name: 'Capacitaciones y acompañamiento', desc: 'Talleres y formación práctica en gestión empresarial para emprendedores y equipos.', target: 'Emprendedores y equipos administrativos.' },
       { icon: 'cpu', name: 'Tecnología y Sistemas', desc: 'Transformación digital, sistemas de gestión e implementación tecnológica adaptada a tu operación.', target: 'Empresas que buscan digitalizar y escalar.' },
@@ -237,8 +237,8 @@ const es: Content = {
     send: 'Enviar consulta',
   },
   finalCta: {
-    title: 'Tu próximo paso empieza con una conversación',
-    text: 'Posicioná tu empresa con un socio estratégico enfocado en resultados a largo plazo.',
+    title: 'Agenda una sesión estratégica hoy',
+    text: 'Ofrecemos un diagnóstico gratuito y un presupuesto adaptado a tus necesidades reales.',
     button: 'Contactanos por WhatsApp',
   },
   footer: {
@@ -301,7 +301,7 @@ const en: Content = {
       { icon: 'calculator', name: 'Accounting & tax advisory', desc: 'Comprehensive accounting management and tax compliance under Paraguayan regulations.', target: 'Entrepreneurs, SMEs and established companies.' },
       { icon: 'shield', name: 'Internal & external audits', desc: 'Assessment of processes, internal control and financial statements for transparency and continuous improvement.', target: 'Medium and large companies.' },
       { icon: 'users', name: 'Human resources management', desc: 'Talent administration, labor compliance and organizational development.', target: 'Growing companies.' },
-      { icon: 'scale', name: 'Corporate legal advisory', desc: 'Legal support for contracts, regulatory compliance and legal risk prevention.', target: 'Companies and entrepreneurs.' },
+      { icon: 'scale', name: 'Corporate legal and notarial advisory', desc: 'Legal support for contracts, regulatory compliance and legal risk prevention.', target: 'Companies and entrepreneurs.' },
       { icon: 'megaphone', name: 'Marketing & advertising', desc: 'Digital marketing strategies and brand positioning focused on results.', target: 'Companies seeking visibility and commercial growth.' },
       { icon: 'graduation', name: 'Training & coaching', desc: 'Workshops and practical training in business management for entrepreneurs and teams.', target: 'Entrepreneurs and administrative teams.' },
       { icon: 'cpu', name: 'Technology & Systems', desc: 'Digital transformation, management systems and technology implementation tailored to your operation.', target: 'Companies looking to digitalize and scale.' },
@@ -373,8 +373,8 @@ const en: Content = {
     send: 'Send inquiry',
   },
   finalCta: {
-    title: 'Your next step starts with a conversation',
-    text: 'Position your company with a strategic partner focused on long-term results.',
+    title: 'Schedule a strategic session today',
+    text: 'We offer a free diagnosis and a proposal adapted to your real needs.',
     button: 'Contact us on WhatsApp',
   },
   footer: {
@@ -437,7 +437,7 @@ const pt: Content = {
       { icon: 'calculator', name: 'Assessoria contábil e fiscal', desc: 'Gestão contábil integral e conformidade tributária conforme a legislação paraguaia.', target: 'Empreendedores, PMEs e empresas consolidadas.' },
       { icon: 'shield', name: 'Auditorias internas e externas', desc: 'Avaliação de processos, controle interno e demonstrações financeiras para transparência e melhoria contínua.', target: 'Empresas médias e grandes.' },
       { icon: 'users', name: 'Gestão de recursos humanos', desc: 'Administração de talentos, conformidade trabalhista e desenvolvimento organizacional.', target: 'Empresas em crescimento.' },
-      { icon: 'scale', name: 'Assessoria jurídica empresarial', desc: 'Apoio jurídico em contratos, conformidade normativa e prevenção de riscos legais.', target: 'Empresas e empreendedores.' },
+      { icon: 'scale', name: 'Assessoria jurídica notarial empresarial', desc: 'Apoio jurídico em contratos, conformidade normativa e prevenção de riscos legais.', target: 'Empresas e empreendedores.' },
       { icon: 'megaphone', name: 'Marketing e publicidade', desc: 'Estratégias de marketing digital e posicionamento de marca orientadas a resultados.', target: 'Empresas que buscam visibilidade e crescimento comercial.' },
       { icon: 'graduation', name: 'Capacitações e acompanhamento', desc: 'Workshops e formação prática em gestão empresarial para empreendedores e equipes.', target: 'Empreendedores e equipes administrativas.' },
       { icon: 'cpu', name: 'Tecnologia e Sistemas', desc: 'Transformação digital, sistemas de gestão e implementação tecnológica adaptada à sua operação.', target: 'Empresas que buscam digitalizar e escalar.' },
@@ -509,8 +509,8 @@ const pt: Content = {
     send: 'Enviar consulta',
   },
   finalCta: {
-    title: 'Seu próximo passo começa com uma conversa',
-    text: 'Posicione sua empresa com um parceiro estratégico focado em resultados de longo prazo.',
+    title: 'Agende uma sessão estratégica hoje',
+    text: 'Oferecemos um diagnóstico gratuito e um orçamento adaptado às suas necessidades reais.',
     button: 'Fale conosco no WhatsApp',
   },
   footer: {
@@ -531,6 +531,7 @@ export const social = {
   facebook: 'https://web.facebook.com/profile.php?id=61577989658195',
   linkedin: 'https://www.linkedin.com/company/108613748/',
   whatsapp: contact.whatsappHref,
+  maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.addressValue)}`,
 };
 
 export function getContent(lang: Lang): Content {

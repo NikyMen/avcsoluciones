@@ -16,6 +16,11 @@ const links = [
   { href: `${base}/#contacto`, label: t.nav.contacto },
 ];
 const current = languages.find((l) => l.code === lang)!;
+const flagImages: Record<Lang, string> = {
+  es: '/images/flag-paraguay.png',
+  en: '/images/flag-usa.png',
+  pt: '/images/flag-brasil.png',
+};
 ---
 <header
   id="site-header"
@@ -53,7 +58,10 @@ const current = languages.find((l) => l.code === lang)!;
             aria-expanded="false"
           >
             <Icon name="globe" class="w-4 h-4" />
-            <span class="uppercase">{current.code}</span>
+            <span class="flag-frame" aria-hidden="true">
+              <img src={flagImages[current.code]} alt="" class="flag-icon" />
+            </span>
+            <span class="sr-only">{current.label}</span>
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div
@@ -65,7 +73,9 @@ const current = languages.find((l) => l.code === lang)!;
                 href={localizedPath(l.code)}
                 class:list={["flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-white/10 transition", l.code === lang && 'text-gold-400']}
               >
-                <span class="text-base">{l.flag}</span>{l.label}
+                <span class="flag-frame" aria-hidden="true">
+                  <img src={flagImages[l.code]} alt="" class="flag-icon" />
+                </span>{l.label}
               </a>
             ))}
           </div>
@@ -143,3 +153,25 @@ const current = languages.find((l) => l.code === lang)!;
     l.addEventListener('click', () => setMenu(false))
   );
 </script>
+
+<style>
+  .flag-frame {
+    width: 1.45rem;
+    height: 1.45rem;
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      0 0 0 1px rgba(11, 11, 15, 0.18);
+  }
+
+  .flag-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>

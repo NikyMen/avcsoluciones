@@ -59,7 +59,7 @@ const socials = [
         <ul class="mt-4 space-y-3 text-sm text-cream/70">
           <li class="flex gap-2.5"><Icon name="phone" class="w-4.5 h-4.5 shrink-0 text-gold-400/80" /><a href={social.whatsapp} class="hover:text-gold-400 transition">{t.contact.whatsappValue}</a></li>
           <li class="flex gap-2.5"><Icon name="mail" class="w-4.5 h-4.5 shrink-0 text-gold-400/80" /><a href={`mailto:${t.contact.emailValue}`} class="hover:text-gold-400 transition">{t.contact.emailValue}</a></li>
-          <li class="flex gap-2.5"><Icon name="pin" class="w-4.5 h-4.5 shrink-0 text-gold-400/80" /><span>{t.contact.addressValue}</span></li>
+          <li class="flex gap-2.5"><Icon name="pin" class="w-4.5 h-4.5 shrink-0 text-gold-400/80" /><a href={social.maps} target="_blank" rel="noopener" class="hover:text-gold-400 transition" data-google-maps-link data-contact-address>{t.contact.addressValue}</a></li>
           <li class="flex gap-2.5"><Icon name="clock" class="w-4.5 h-4.5 shrink-0 text-gold-400/80" /><span>{t.contact.hoursValue}</span></li>
         </ul>
       </div>

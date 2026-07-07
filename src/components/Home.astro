@@ -121,10 +121,25 @@ const wa = social.whatsapp;
       </div>
 
       <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {t.services.items.map((s) => (
-          <article class="reveal group rounded-2xl border border-white/10 bg-white/[0.03] p-7 hover:bg-white/[0.06] hover:border-gold-400/40 transition-all duration-300">
-            <div class="grid place-items-center h-12 w-12 rounded-xl bg-gold-400/15 text-gold-400 group-hover:bg-gold-400 group-hover:text-ink-950 transition-colors">
-              <Icon name={s.icon} class="w-6 h-6" />
+        {t.services.items.map((s, i) => (
+          <article
+            class="service-card reveal group rounded-2xl border border-white/10 bg-white/[0.03] p-7 hover:bg-white/[0.06] hover:border-gold-400/40 transition-all duration-300"
+            data-service-card
+            data-service-id={`service-${i}`}
+            data-service-name={s.name}
+            data-service-desc={s.desc}
+            data-service-target={s.target}
+            role="button"
+            tabindex="0"
+            aria-haspopup="dialog"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="grid place-items-center h-12 w-12 rounded-xl bg-gold-400/15 text-gold-400 group-hover:bg-gold-400 group-hover:text-ink-950 transition-colors" data-service-icon>
+                <Icon name={s.icon} class="w-6 h-6" />
+              </div>
+              <span class="service-card-toggle grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-cream/55 transition">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </span>
             </div>
             <h3 class="mt-5 font-display text-xl">{s.name}</h3>
             <p class="mt-2.5 text-sm text-cream/65 leading-relaxed">{s.desc}</p>
@@ -134,6 +149,54 @@ const wa = social.whatsapp;
       </div>
     </div>
   </section>
+
+  <div class="service-modal" data-service-modal aria-hidden="true">
+    <button type="button" class="service-modal-backdrop" data-service-modal-close aria-label="Cerrar detalle de servicio"></button>
+    <article class="service-modal-card" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
+      <button type="button" class="service-modal-close" data-service-modal-close aria-label="Cerrar">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+
+      <div class="service-modal-content">
+        <div class="grid place-items-center h-12 w-12 rounded-xl bg-gold-400 text-ink-950" data-service-modal-icon></div>
+        <h3 id="service-modal-title" class="mt-5 font-display text-2xl sm:text-3xl text-cream" data-service-modal-title></h3>
+        <p class="mt-3 max-w-2xl text-sm sm:text-base text-cream/68 leading-relaxed" data-service-modal-desc></p>
+        <p class="mt-5 text-xs text-gold-300/90"><span class="uppercase tracking-wider font-semibold">{t.services.targetLabel}:</span> <span data-service-modal-target></span></p>
+
+        <div class="service-cv-panel mt-7 border-t border-white/10 pt-5" data-service-cv-panel role="button" tabindex="0" aria-expanded="false">
+          <div class="service-cv-heading">
+            <p class="text-xs uppercase tracking-wider font-semibold text-gold-300">CVs del equipo</p>
+            <span class="service-cv-count" data-service-cv-count></span>
+          </div>
+          <p class="mt-2 text-sm text-cream/55" data-service-modal-empty>Todavía no hay CVs cargados para este servicio.</p>
+          <div class="service-cv-actions" data-service-modal-cv-list></div>
+          <div class="cv-preview-panel mt-4" data-service-modal-preview>
+            <div class="grid min-h-56 place-items-center rounded-xl border border-dashed border-white/10 bg-white/[0.025] px-4 py-8 text-center">
+              <div>
+                <p class="font-display text-lg text-cream">Vista previa</p>
+                <p class="mt-2 text-sm text-cream/50">Los CVs cargados se verán apilados con una vista previa de su primera página.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cv-gallery-card hidden" data-cv-gallery aria-hidden="true">
+          <div class="cv-gallery-window">
+            <div class="cv-gallery-header">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Equipo de trabajo</p>
+                <h4 class="mt-1 font-display text-2xl text-cream">Curriculums disponibles</h4>
+              </div>
+              <button type="button" class="cv-gallery-close" data-cv-gallery-close aria-label="Cerrar galeria">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+              </button>
+            </div>
+            <div class="cv-gallery-grid" data-cv-gallery-list></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
 
   <!-- ============ SECTORES ============ -->
   <section id="sectores" class="py-24 bg-cream">
@@ -306,10 +369,10 @@ const wa = social.whatsapp;
             <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600 group-hover:bg-gold-400 group-hover:text-ink-950 transition"><Icon name="mail" class="w-5 h-5" /></span>
             <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.email}</span><span class="font-medium">{t.contact.emailValue}</span></span>
           </a>
-          <div class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4">
-            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600"><Icon name="pin" class="w-5 h-5" /></span>
-            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.address}</span><span class="font-medium text-sm">{t.contact.addressValue}</span></span>
-          </div>
+          <a href={social.maps} target="_blank" rel="noopener" class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4 hover:border-gold-400/50 hover:shadow-soft transition group" data-google-maps-link>
+            <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600 group-hover:bg-gold-400 group-hover:text-ink-950 transition"><Icon name="pin" class="w-5 h-5" /></span>
+            <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.address}</span><span class="font-medium text-sm" data-contact-address>{t.contact.addressValue}</span></span>
+          </a>
           <div class="flex items-center gap-4 rounded-2xl border border-ink-700/10 p-4">
             <span class="grid place-items-center h-11 w-11 rounded-xl bg-gold-100 text-gold-600"><Icon name="clock" class="w-5 h-5" /></span>
             <span><span class="block text-xs uppercase tracking-wider text-ink-500">{t.contact.hours}</span><span class="font-medium">{t.contact.hoursValue}</span></span>
@@ -344,7 +407,13 @@ const wa = social.whatsapp;
 
 <Footer lang={lang} />
 
-<script define:vars={{ phone: '595991437021' }}>
+<script>
+  import * as pdfjsLib from 'pdfjs-dist';
+  import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+  const phone = '595991437021';
+
   const form = document.querySelector('[data-contact-form]');
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -357,4 +426,784 @@ const wa = social.whatsapp;
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
     });
   }
+
+  let serviceCvs = {};
+  const loadServiceCvs = async () => {
+    try {
+      const response = await fetch('/api/cvs?preview=1');
+      if (!response.ok) return {};
+      const payload = await response.json();
+      serviceCvs = payload.cvs || {};
+    } catch {
+      serviceCvs = {};
+    }
+  };
+
+  const formatCvSize = (bytes) => {
+    if (!bytes) return '';
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const escapeCvHtml = (value) =>
+    String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+  const serviceModal = document.querySelector('[data-service-modal]');
+  const serviceModalIcon = document.querySelector('[data-service-modal-icon]');
+  const serviceModalTitle = document.querySelector('[data-service-modal-title]');
+  const serviceModalDesc = document.querySelector('[data-service-modal-desc]');
+  const serviceModalTarget = document.querySelector('[data-service-modal-target]');
+  const serviceModalCvPanel = document.querySelector('[data-service-cv-panel]');
+  const serviceModalCvCount = document.querySelector('[data-service-cv-count]');
+  const serviceModalEmpty = document.querySelector('[data-service-modal-empty]');
+  const serviceModalList = document.querySelector('[data-service-modal-cv-list]');
+  const serviceModalPreview = document.querySelector('[data-service-modal-preview]');
+  const cvGallery = document.querySelector('[data-cv-gallery]');
+  const cvGalleryList = document.querySelector('[data-cv-gallery-list]');
+  let activeServiceId = '';
+
+  const setCvPanelExpanded = (expanded) => {
+    serviceModalCvPanel.classList.toggle('is-expanded', expanded);
+    serviceModalCvPanel.setAttribute('aria-expanded', String(expanded));
+  };
+
+  const renderCvPreviewCard = (cv, index) => {
+    const offsetX = (index * 0.38).toFixed(2);
+    const offsetY = (index * 0.48).toFixed(2);
+    const shiftX = (index * 0.12).toFixed(2);
+    const spreadX = (index * 7.95).toFixed(2);
+    const widthInset = (index * 0.38).toFixed(2);
+    const rotate = ((index % 2 === 0 ? -1 : 1) * Math.min(index * 1.3, 3.5)).toFixed(2);
+    const zIndex = 10 + index;
+    const isPdf = cv.type === 'application/pdf' || cv.name.toLowerCase().endsWith('.pdf');
+    if (isPdf) {
+      return `
+        <span
+          class="cv-stack-card"
+          style="--cv-index: ${index}; --cv-z: ${zIndex}; --cv-x: ${offsetX}rem; --cv-y: ${offsetY}rem; --cv-shift: ${shiftX}rem; --cv-spread: ${spreadX}rem; --cv-width-inset: ${widthInset}rem; --cv-rotate: ${rotate}deg"
+          aria-hidden="true"
+        >
+          <span class="cv-stack-snapshot">
+            <canvas class="cv-stack-canvas" data-cv-preview-canvas="${escapeCvHtml(cv.id)}" aria-hidden="true"></canvas>
+          </span>
+        </span>
+      `;
+    }
+
+    return `
+      <span
+        class="cv-stack-card cv-stack-card-doc"
+        style="--cv-index: ${index}; --cv-z: ${zIndex}; --cv-x: ${offsetX}rem; --cv-y: ${offsetY}rem; --cv-shift: ${shiftX}rem; --cv-spread: ${spreadX}rem; --cv-width-inset: ${widthInset}rem; --cv-rotate: ${rotate}deg"
+        aria-hidden="true"
+      >
+        <span class="grid h-full place-items-center rounded-xl border border-white/10 bg-white/[0.04] px-4 py-6 text-center">
+          <span>
+            <span class="block font-display text-lg text-cream">${escapeCvHtml(cv.name)}</span>
+            <span class="mt-2 block text-sm text-cream/50">Este formato no permite vista previa embebida. Click para abrir.</span>
+          </span>
+        </span>
+      </span>
+    `;
+  };
+
+  const renderCvGalleryCard = (cv) => {
+    const isPdf = cv.type === 'application/pdf' || cv.name.toLowerCase().endsWith('.pdf');
+    return `
+      <a
+        href="${cv.url}"
+        target="_blank"
+        rel="noopener"
+        class="cv-gallery-item"
+        aria-label="Abrir ${escapeCvHtml(cv.name)}"
+      >
+        <span class="cv-gallery-photo">
+          ${
+            isPdf
+              ? `<canvas class="cv-gallery-canvas" data-cv-gallery-canvas="${escapeCvHtml(cv.id)}" aria-hidden="true"></canvas>`
+              : `<span class="cv-gallery-doc">${escapeCvHtml(cv.name.split('.').pop() || 'DOC')}</span>`
+          }
+        </span>
+        <span class="cv-gallery-name">${escapeCvHtml(cv.name)}</span>
+        <span class="cv-gallery-open">Abrir documento</span>
+      </a>
+    `;
+  };
+
+  const dataUrlToUint8Array = (dataUrl) => {
+    const base64 = dataUrl.split(',')[1] || '';
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  };
+
+  const drawPdfPreview = async (canvas, cv) => {
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    try {
+      if (!cv.previewDataUrl) throw new Error('Vista previa no disponible');
+      const pdf = await pdfjsLib.getDocument({ data: dataUrlToUint8Array(cv.previewDataUrl) }).promise;
+      const page = await pdf.getPage(1);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const cssWidth = canvas.parentElement?.clientWidth || 340;
+      const pixelRatio = window.devicePixelRatio || 1;
+      const scale = (cssWidth / baseViewport.width) * pixelRatio;
+      const viewport = page.getViewport({ scale });
+
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      canvas.style.width = `${Math.floor(viewport.width / pixelRatio)}px`;
+      canvas.style.height = `${Math.floor(viewport.height / pixelRatio)}px`;
+
+      await page.render({ canvasContext: context, viewport }).promise;
+    } catch {
+      canvas.closest('.cv-stack-snapshot, .cv-gallery-photo')?.classList.add('cv-stack-snapshot-error');
+    }
+  };
+
+  const drawPdfCanvases = (root, cvs, attributeName) => {
+    cvs.forEach((cv) => {
+      const isPdf = cv.type === 'application/pdf' || cv.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) return;
+      const canvas = root.querySelector(`[${attributeName}="${CSS.escape(cv.id)}"]`);
+      if (canvas) drawPdfPreview(canvas, cv);
+    });
+  };
+
+  const drawVisiblePdfPreviews = (cvs) => {
+    drawPdfCanvases(serviceModalPreview, cvs, 'data-cv-preview-canvas');
+  };
+
+  const closeCvGallery = () => {
+    cvGallery.classList.add('hidden');
+    cvGallery.setAttribute('aria-hidden', 'true');
+    serviceModalCvPanel.setAttribute('aria-expanded', 'false');
+  };
+
+  const openCvGallery = () => {
+    const cvs = serviceCvs[activeServiceId] || [];
+    if (!cvs.length) return;
+    cvGalleryList.innerHTML = cvs.map(renderCvGalleryCard).join('');
+    cvGallery.classList.remove('hidden');
+    cvGallery.setAttribute('aria-hidden', 'false');
+    serviceModalCvPanel.setAttribute('aria-expanded', 'true');
+    drawPdfCanvases(cvGalleryList, cvs, 'data-cv-gallery-canvas');
+  };
+
+  const renderModalCvs = async (serviceId) => {
+    await loadServiceCvs();
+    const cvs = serviceCvs[serviceId] || [];
+    serviceModalList.innerHTML = '';
+    serviceModalEmpty.classList.toggle('hidden', cvs.length > 0);
+    serviceModalPreview.classList.toggle('hidden', cvs.length === 0);
+    serviceModalCvPanel.classList.toggle('has-cvs', cvs.length > 0);
+    serviceModalCvPanel.tabIndex = cvs.length ? 0 : -1;
+    serviceModalCvCount.textContent = cvs.length ? `${cvs.length} ${cvs.length === 1 ? 'archivo' : 'archivos'}` : '';
+    setCvPanelExpanded(false);
+    serviceModalPreview.style.setProperty('--cv-count', String(cvs.length));
+    serviceModalPreview.style.setProperty('--cv-stack-height', `calc(var(--cv-snapshot-height) + ${Math.max(0, cvs.length - 1) * 0.48}rem)`);
+
+    cvs.forEach((cv, index) => {
+      const link = document.createElement('a');
+      link.href = cv.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.className = 'inline-flex max-w-full items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3 py-1.5 text-xs font-semibold text-gold-300 hover:bg-gold-400 hover:text-ink-950 transition';
+      link.innerHTML = `<span class="truncate">${escapeCvHtml(cv.name)}</span>${cv.size ? `<span class="text-[0.65rem] opacity-70">${formatCvSize(cv.size)}</span>` : ''}`;
+      serviceModalList.appendChild(link);
+    });
+
+    serviceModalPreview.innerHTML = cvs.length
+      ? `<div class="cv-preview-stack"><span class="cv-stack-cta">Ver equipo de trabajo</span>${cvs.map(renderCvPreviewCard).join('')}</div>`
+      : '';
+    closeCvGallery();
+    drawVisiblePdfPreviews(cvs);
+  };
+
+  serviceModalCvPanel.addEventListener('click', (event) => {
+    if (!serviceModalCvPanel.classList.contains('has-cvs')) return;
+    event.preventDefault();
+    openCvGallery();
+  });
+
+  serviceModalCvPanel.addEventListener('keydown', (event) => {
+    if (!serviceModalCvPanel.classList.contains('has-cvs')) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openCvGallery();
+  });
+
+  document.querySelectorAll('[data-cv-gallery-close]').forEach((button) => {
+    button.addEventListener('click', closeCvGallery);
+  });
+
+  const openServiceModal = (card) => {
+    activeServiceId = card.getAttribute('data-service-id') || '';
+    const icon = card.querySelector('[data-service-icon]');
+    serviceModalIcon.innerHTML = icon ? icon.innerHTML : '';
+    serviceModalTitle.textContent = card.dataset.serviceName || '';
+    serviceModalDesc.textContent = card.dataset.serviceDesc || '';
+    serviceModalTarget.textContent = card.dataset.serviceTarget || '';
+    renderModalCvs(activeServiceId);
+    serviceModal.classList.add('is-open');
+    serviceModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('service-modal-open');
+  };
+
+  document.querySelectorAll('[data-service-card]').forEach((card) => {
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('a, button')) return;
+      openServiceModal(card);
+    });
+
+    card.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openServiceModal(card);
+    });
+  });
+
+  const closeServiceModal = () => {
+    closeCvGallery();
+    serviceModal.classList.remove('is-open');
+    serviceModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('service-modal-open');
+  };
+
+  document.querySelectorAll('[data-service-modal-close]').forEach((button) => {
+    button.addEventListener('click', closeServiceModal);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && serviceModal.classList.contains('is-open')) {
+      closeServiceModal();
+    }
+  });
+
 </script>
+
+<style>
+  .service-card {
+    cursor: pointer;
+    min-height: 16.5rem;
+  }
+
+  .service-card:focus-visible {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 4px;
+  }
+
+  .service-card-toggle svg {
+    transition: transform 0.22s ease;
+  }
+
+  .service-card:hover .service-card-toggle {
+    color: var(--color-gold-300);
+    border-color: color-mix(in srgb, var(--color-gold-400) 42%, transparent);
+    background: rgba(212, 175, 55, 0.1);
+  }
+
+  .service-card:hover .service-card-toggle svg {
+    transform: translateX(2px);
+  }
+
+  .service-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      opacity 0.26s ease,
+      backdrop-filter 0.26s ease;
+  }
+
+  .service-modal.is-open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  .service-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 55% at 50% 10%, rgba(212, 175, 55, 0.12), transparent),
+      rgba(11, 11, 15, 0.72);
+    backdrop-filter: blur(12px);
+  }
+
+  .service-modal-card {
+    position: relative;
+    width: min(100%, 34rem);
+    max-height: min(88vh, 45rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--color-gold-400) 42%, transparent);
+    border-radius: 1.5rem;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+      var(--color-ink-900);
+    box-shadow: 0 28px 90px -34px rgba(0, 0, 0, 0.9);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    transform: translateY(1rem) scale(0.96);
+    transition:
+      transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.24s ease;
+    opacity: 0;
+  }
+
+  .service-modal-content {
+    padding-right: 2rem;
+  }
+
+  .service-modal.is-open .service-modal-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .service-modal-close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: 6;
+    display: grid;
+    height: 2.5rem;
+    width: 2.5rem;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(247, 245, 240, 0.72);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .service-modal-close:hover {
+    color: var(--color-gold-300);
+    border-color: color-mix(in srgb, var(--color-gold-400) 45%, transparent);
+    background: rgba(212, 175, 55, 0.1);
+  }
+
+  .service-cv-panel {
+    cursor: default;
+  }
+
+  .service-cv-panel.has-cvs {
+    cursor: pointer;
+  }
+
+  .service-cv-panel:focus-visible {
+    outline: 2px solid var(--color-gold-300);
+    outline-offset: 5px;
+    border-radius: 1rem;
+  }
+
+  .service-cv-heading {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .service-cv-count {
+    margin-left: auto;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    background: rgba(212, 175, 55, 0.08);
+    padding: 0.28rem 0.6rem;
+    color: rgba(247, 245, 240, 0.56);
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .service-cv-count:empty {
+    display: none;
+  }
+
+  .service-cv-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-0.35rem);
+    transition:
+      max-height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.22s ease,
+      transform 0.24s ease,
+      margin-top 0.22s ease;
+  }
+
+  .service-cv-panel.is-expanded .service-cv-actions {
+    max-height: 9rem;
+    margin-top: 1rem;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cv-gallery-card {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+    padding: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .cv-gallery-card::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: rgba(11, 11, 15, 0.62);
+    backdrop-filter: blur(8px);
+  }
+
+  .cv-gallery-window {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 26rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--color-gold-400) 28%, transparent);
+    border-radius: 1.35rem;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+      rgba(17, 17, 24, 0.92);
+    box-shadow: 0 22px 60px -38px rgba(0, 0, 0, 0.95);
+  }
+
+  .cv-gallery-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .cv-gallery-card.hidden {
+    display: none;
+  }
+
+  .cv-gallery-close {
+    display: grid;
+    position: relative;
+    z-index: 2;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(247, 245, 240, 0.68);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .cv-gallery-close:hover {
+    color: var(--color-gold-300);
+    border-color: color-mix(in srgb, var(--color-gold-400) 45%, transparent);
+    background: rgba(212, 175, 55, 0.1);
+  }
+
+  .cv-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.6rem, 1fr));
+    gap: 0.85rem;
+    max-height: min(52vh, 25rem);
+    overflow-y: auto;
+    padding: 0.8rem 1rem 1rem;
+  }
+
+  :global(.cv-gallery-item) {
+    display: block;
+    min-width: 0;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.045);
+    padding: 0.42rem;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  :global(.cv-gallery-item:hover),
+  :global(.cv-gallery-item:focus-visible) {
+    border-color: color-mix(in srgb, var(--color-gold-300) 62%, transparent);
+    background: rgba(212, 175, 55, 0.08);
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  :global(.cv-gallery-photo) {
+    display: grid;
+    height: 8rem;
+    place-items: start center;
+    overflow: hidden;
+    border-radius: 0.78rem;
+    background: white;
+  }
+
+  :global(.cv-gallery-canvas) {
+    display: block;
+    width: 100% !important;
+    height: auto;
+  }
+
+  :global(.cv-gallery-doc) {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background: rgba(17, 17, 24, 0.92);
+    color: var(--color-gold-200);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :global(.cv-gallery-name) {
+    display: block;
+    margin-top: 0.65rem;
+    overflow: hidden;
+    color: rgba(247, 245, 240, 0.84);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.cv-gallery-open) {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--color-gold-300);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cv-preview-panel {
+    --cv-snapshot-height: clamp(5.75rem, 28vw, 7.5rem);
+    width: min(100%, 28rem);
+    margin-top: 0.9rem;
+  }
+
+  :global(.cv-preview-stack) {
+    position: relative;
+    min-height: var(--cv-stack-height, var(--cv-snapshot-height));
+    isolation: isolate;
+  }
+
+  :global(.cv-stack-card) {
+    position: absolute;
+    left: var(--cv-x, 0);
+    top: var(--cv-y, 0);
+    z-index: var(--cv-z, 10);
+    display: block;
+    pointer-events: none;
+    width: min(calc(100% - var(--cv-width-inset, 0rem)), 11.45rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--color-gold-400) 38%, transparent);
+    border-radius: 1.05rem;
+    background: var(--color-ink-950);
+    padding: 0.18rem;
+    box-shadow:
+      0 9px 22px -16px rgba(0, 0, 0, 0.98),
+      0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    transform: translateX(var(--cv-shift, 0)) rotate(var(--cv-rotate, 0deg));
+    transition:
+      transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  :global(.cv-stack-card:nth-child(3n + 2)) {
+    border-color: rgba(247, 245, 240, 0.2);
+  }
+
+  :global(.cv-stack-card:nth-child(3n)) {
+    border-color: color-mix(in srgb, var(--color-gold-300) 52%, transparent);
+  }
+
+  :global(.cv-stack-card:hover),
+  :global(.cv-stack-card:focus-visible) {
+    border-color: color-mix(in srgb, var(--color-gold-400) 38%, transparent);
+    box-shadow:
+      0 9px 22px -16px rgba(0, 0, 0, 0.98),
+      0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+
+  :global(.cv-stack-card:focus-visible) {
+    outline: none;
+  }
+
+  :global(.cv-stack-snapshot) {
+    position: relative;
+    display: block;
+    height: var(--cv-snapshot-height);
+    overflow: hidden;
+    border-radius: 0.86rem;
+    background: white;
+    isolation: isolate;
+  }
+
+  :global(.cv-stack-canvas) {
+    position: relative;
+    z-index: 0;
+    display: block;
+    width: 100% !important;
+    height: auto;
+    pointer-events: none;
+    border-radius: inherit;
+    filter: none;
+    transition: transform 0.22s ease;
+  }
+
+  :global(.cv-stack-card:hover .cv-stack-canvas),
+  :global(.cv-stack-card:focus-visible .cv-stack-canvas) {
+    transform: none;
+  }
+
+  :global(.cv-stack-snapshot)::after {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 3;
+    height: 45%;
+    content: '';
+    background:
+      linear-gradient(to bottom, transparent 0%, rgba(17, 17, 24, 0.62) 100%);
+    pointer-events: none;
+  }
+
+  :global(.cv-stack-cta) {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 80;
+    display: grid;
+    width: min(100%, 11.45rem);
+    min-height: 3rem;
+    place-items: center;
+    border-radius: 0 0 1.05rem 1.05rem;
+    background: linear-gradient(180deg, rgba(17, 17, 24, 0.28), rgba(17, 17, 24, 0.94));
+    color: var(--color-gold-200);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(0.55rem);
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease,
+      width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .service-cv-panel.has-cvs:hover :global(.cv-stack-cta),
+  .service-cv-panel.has-cvs:focus-within :global(.cv-stack-cta),
+  .service-cv-panel.has-cvs.is-expanded :global(.cv-stack-cta) {
+    width: min(100%, 27.5rem);
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .service-cv-panel.has-cvs:hover :global(.cv-stack-card),
+  .service-cv-panel.has-cvs:focus-within :global(.cv-stack-card),
+  .service-cv-panel.has-cvs.is-expanded :global(.cv-stack-card) {
+    border-color: color-mix(in srgb, var(--color-gold-400) 38%, transparent);
+    transform: translateX(var(--cv-spread, 0)) translateY(calc(var(--cv-y, 0rem) * -1)) rotate(0deg);
+  }
+
+  :global(.cv-stack-snapshot)::before {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    content: '';
+    background: rgba(104, 104, 104, 0.42);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+
+  :global(.cv-stack-snapshot-error) {
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  :global(.cv-stack-snapshot-error)::before {
+    content: 'Vista previa no disponible';
+    color: rgba(247, 245, 240, 0.55);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  :global(.cv-stack-card-doc) {
+    height: 10.9rem;
+  }
+
+  :global(body.service-modal-open) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-modal,
+    .service-modal-card,
+    .service-card-toggle svg {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .service-modal-card {
+      width: min(100%, 28rem);
+      padding: 1.25rem;
+    }
+
+    .service-modal-content {
+      padding-right: 0;
+      padding-top: 1.25rem;
+    }
+
+    .cv-preview-panel {
+      width: min(100%, 100%);
+    }
+
+    :global(.cv-preview-stack) {
+      min-height: var(--cv-stack-height, var(--cv-snapshot-height));
+    }
+
+    :global(.cv-stack-card) {
+      left: min(var(--cv-x, 0), 1.2rem);
+      width: min(calc(100% - min(var(--cv-width-inset, 0rem), 1.2rem)), 10.8rem);
+      transform: translateX(0) rotate(var(--cv-rotate, 0deg));
+    }
+
+    :global(.cv-stack-card:hover),
+    :global(.cv-stack-card:focus-visible) {
+      transform: translateX(var(--cv-spread, 0)) translateY(calc(var(--cv-y, 0rem) * -1)) rotate(0deg);
+    }
+
+    :global(.cv-stack-snapshot) {
+      height: var(--cv-snapshot-height);
+    }
+  }
+</style>

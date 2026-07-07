@@ -1,0 +1,812 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, social } from '../i18n/content';
+
+const t = getContent('es');
+const services = t.services.items;
+const languages = ['ES', 'EN', 'PT'];
+---
+
+<Layout
+  lang="es"
+  htmlLang="es"
+  title="Panel administrador | AVC Soluciones Empresariales"
+  description="Panel interno para administrar CVs asociados a los servicios de AVC Soluciones Empresariales."
+>
+  <main class="admin-shell min-h-screen bg-ink-950 text-cream">
+    <section class="admin-login-screen" data-login-screen>
+      <div class="admin-login-card">
+        <a href="/" class="inline-flex items-center gap-2 text-sm font-semibold text-gold-300 hover:text-gold-200 transition">
+          <Icon name="arrow" class="h-4 w-4 rotate-180" /> Volver al sitio
+        </a>
+
+        <div class="mt-8">
+          <p class="eyebrow !text-gold-300">Acceso interno</p>
+          <h1 class="mt-4 text-4xl leading-tight">Panel administrador</h1>
+          <p class="mt-4 text-sm leading-relaxed text-cream/62">
+            Ingresa con tu usuario para administrar CVs y revisar las estadisticas principales de la web.
+          </p>
+        </div>
+
+        <form class="mt-8 space-y-4" data-login-form>
+          <label class="block">
+            <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Usuario</span>
+            <input
+              class="admin-input mt-2"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+              placeholder="admin"
+            />
+          </label>
+
+          <label class="block">
+            <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Contrasena</span>
+            <input
+              class="admin-input mt-2"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              placeholder="********"
+            />
+          </label>
+
+          <p class="hidden rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-sm text-red-100" data-login-error>
+            Usuario o contrasena incorrectos.
+          </p>
+
+          <button type="submit" class="btn btn-gold w-full justify-center">Ingresar</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="hidden" data-admin-app>
+      <header class="relative overflow-hidden border-b border-white/10">
+        <div class="absolute inset-0 bg-[radial-gradient(55%_70%_at_72%_0%,rgba(212,175,55,0.16),transparent)]"></div>
+        <div class="container-x relative py-10 sm:py-14">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-2xl">
+              <a href="/" class="admin-back-link">
+                <Icon name="arrow" class="h-4 w-4 rotate-180" /> Volver al sitio
+              </a>
+              <p class="admin-section-kicker eyebrow !text-gold-300">Panel administrador</p>
+              <h1 class="mt-4 text-4xl sm:text-5xl leading-tight">Dashboard y CVs del equipo</h1>
+              <p class="mt-4 text-cream/70 leading-relaxed">
+                Controla el contenido cargado en el navegador, revisa cobertura por servicio y actualiza los documentos que aparecen en la web publica.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="rounded-full border border-gold-400/25 bg-gold-400/10 px-3 py-1.5 text-xs font-semibold text-gold-200">
+                Sesion: <span data-session-user>admin</span>
+              </span>
+              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-logout>Cerrar sesion</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="container-x py-9 sm:py-12">
+        <div class="admin-dashboard">
+          <article class="admin-metric">
+            <span class="admin-metric-icon"><Icon name="briefcase" class="h-5 w-5" /></span>
+            <p class="admin-metric-label">Servicios publicados</p>
+            <p class="admin-metric-value">{services.length}</p>
+          </article>
+
+          <article class="admin-metric">
+            <span class="admin-metric-icon"><Icon name="download" class="h-5 w-5" /></span>
+            <p class="admin-metric-label">CVs cargados</p>
+            <p class="admin-metric-value" data-total-cvs>0</p>
+          </article>
+
+          <article class="admin-metric">
+            <span class="admin-metric-icon"><Icon name="check" class="h-5 w-5" /></span>
+            <p class="admin-metric-label">Servicios con CV</p>
+            <p class="admin-metric-value"><span data-covered-services>0</span>/{services.length}</p>
+          </article>
+
+          <article class="admin-metric">
+            <span class="admin-metric-icon"><Icon name="globe" class="h-5 w-5" /></span>
+            <p class="admin-metric-label">Idiomas activos</p>
+            <p class="admin-metric-value">{languages.length}</p>
+          </article>
+        </div>
+
+        <div class="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <section class="admin-panel p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Cobertura de CVs</p>
+                <h2 class="mt-1 font-display text-2xl">Distribucion por servicio</h2>
+              </div>
+              <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-cream/55" data-storage-used>0 KB usados</span>
+            </div>
+            <div class="mt-5 space-y-3" data-service-chart>
+              {services.map((service, i) => (
+                <div class="admin-chart-row" data-chart-row data-service-id={`service-${i}`}>
+                  <div class="flex items-center justify-between gap-3 text-sm">
+                    <span class="truncate text-cream/78">{service.name}</span>
+                    <span class="font-semibold text-gold-300" data-chart-count>0</span>
+                  </div>
+                  <div class="mt-2 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                    <span class="block h-full rounded-full bg-gold-400" style="width: 0%" data-chart-bar></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <aside class="admin-panel p-5">
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Actividad</p>
+            <h2 class="mt-1 font-display text-2xl">Resumen rapido</h2>
+
+            <dl class="mt-5 space-y-4">
+              <div class="admin-detail-row">
+                <dt>Ultimo CV cargado</dt>
+                <dd data-last-upload>Sin cargas todavia</dd>
+              </div>
+              <div class="admin-detail-row">
+                <dt>Servicio con mas CVs</dt>
+                <dd data-top-service>Sin datos</dd>
+              </div>
+              <div class="admin-detail-row">
+                <dt>Secciones publicas</dt>
+                <dd>Inicio, servicios, sectores, inversionistas y contacto</dd>
+              </div>
+              <div class="admin-detail-row">
+                <dt>Idiomas</dt>
+                <dd>{languages.join(' / ')}</dd>
+              </div>
+            </dl>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="/#servicios" class="btn btn-gold !py-2 !px-4 text-sm">Ver sitio publico</a>
+              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-clear-all>Limpiar CVs</button>
+            </div>
+          </aside>
+        </div>
+
+        <section class="admin-panel mt-5 p-5">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-2xl">
+              <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Google Maps</p>
+              <h2 class="mt-1 font-display text-2xl">Destino de los botones de direccion</h2>
+              <p class="mt-2 text-sm leading-relaxed text-cream/58">
+                Escribe la direccion como la buscarias en Google Maps. El sitio generara el enlace y actualizara los botones de direccion.
+              </p>
+            </div>
+            <a
+              href={social.maps}
+              target="_blank"
+              rel="noopener"
+              class="btn btn-outline !py-2 !px-4 text-sm"
+              data-location-open
+            >
+              Abrir destino actual
+            </a>
+          </div>
+
+          <form
+            class="admin-location-form mt-5"
+            data-location-form
+            data-default-address={t.contact.addressValue}
+            data-default-maps-url={social.maps}
+          >
+            <label class="block">
+              <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Direccion para Google Maps</span>
+              <input
+                class="admin-input mt-2"
+                name="address"
+                type="text"
+                autocomplete="street-address"
+                placeholder="Ej: Tres Centurias Esquina Bandera de la Patria, Asuncion"
+                data-location-address-input
+              />
+            </label>
+
+            <div class="admin-location-preview">
+              <span class="admin-location-icon"><Icon name="pin" class="h-5 w-5" /></span>
+              <div class="min-w-0">
+                <p class="text-xs font-semibold uppercase tracking-wider text-cream/45">Hipervinculo generado</p>
+                <a
+                  href={social.maps}
+                  target="_blank"
+                  rel="noopener"
+                  class="mt-1 block truncate text-sm font-semibold text-gold-300 hover:text-gold-200 transition"
+                  data-location-url-preview
+                >
+                  {social.maps}
+                </a>
+                <p class="mt-1 text-xs text-cream/45" data-location-status>Usando la direccion original del sitio.</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <button type="submit" class="btn btn-gold !py-2 !px-4 text-sm">Guardar direccion</button>
+              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-location-reset>Restaurar original</button>
+            </div>
+          </form>
+        </section>
+      </section>
+
+      <section class="container-x pb-12 sm:pb-16">
+        <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Gestion de documentos</p>
+            <h2 class="mt-1 font-display text-3xl">CVs por servicio</h2>
+          </div>
+          <p class="max-w-xl text-sm leading-relaxed text-cream/55">
+            Los documentos se guardan en el servidor y quedan disponibles para todos los visitantes desde los modales de servicios.
+          </p>
+        </div>
+
+        <div class="grid gap-5 lg:grid-cols-2">
+          {services.map((service, i) => (
+            <article
+              class="admin-card rounded-2xl border border-white/10 bg-white/[0.035] p-6 shadow-soft"
+              data-admin-service
+              data-service-id={`service-${i}`}
+              data-service-name={service.name}
+            >
+              <div class="flex items-start gap-4">
+                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gold-400/15 text-gold-400">
+                  <Icon name={service.icon} class="h-6 w-6" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-3">
+                    <h3 class="font-display text-xl leading-tight">{service.name}</h3>
+                    <span class="rounded-full border border-white/10 px-2.5 py-1 text-xs font-semibold text-cream/50" data-service-count>0 CVs</span>
+                  </div>
+                  <p class="mt-2 text-sm leading-relaxed text-cream/65">{service.desc}</p>
+                  <p class="mt-3 text-xs text-gold-300/90">
+                    <span class="font-semibold uppercase tracking-wider">{t.services.targetLabel}:</span> {service.target}
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6 rounded-2xl border border-dashed border-gold-400/35 bg-ink-950/45 p-4">
+                <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl px-4 py-6 text-center hover:bg-white/[0.03] transition">
+                  <span class="grid h-11 w-11 place-items-center rounded-full bg-gold-400 text-ink-950">
+                    <Icon name="download" class="h-5 w-5" />
+                  </span>
+                  <span class="font-semibold">Agregar CVs a este servicio</span>
+                  <span class="text-xs text-cream/50">PDF, DOC o DOCX. Puedes seleccionar varios archivos.</span>
+                  <input class="sr-only" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple data-file-input />
+                </label>
+              </div>
+
+              <div class="mt-5">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-xs font-semibold uppercase tracking-wider text-cream/50">Documentos asociados</p>
+                  <button type="button" class="text-xs font-semibold text-gold-300 hover:text-gold-200 transition" data-clear-service>
+                    Limpiar servicio
+                  </button>
+                </div>
+                <div class="mt-3 space-y-2" data-cv-list>
+                  <p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay CVs cargados.</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  const loginScreen = document.querySelector('[data-login-screen]');
+  const adminApp = document.querySelector('[data-admin-app]');
+  const loginForm = document.querySelector('[data-login-form]');
+  const loginError = document.querySelector('[data-login-error]');
+  const locationForm = document.querySelector('[data-location-form]');
+  const locationAddressInput = document.querySelector('[data-location-address-input]');
+  const locationUrlPreview = document.querySelector('[data-location-url-preview]');
+  const locationStatus = document.querySelector('[data-location-status]');
+  const locationOpen = document.querySelector('[data-location-open]');
+  const defaultLocation = {
+    address: locationForm?.getAttribute('data-default-address') || '',
+    mapsUrl: locationForm?.getAttribute('data-default-maps-url') || '',
+  };
+  let cvStore = {};
+  let currentUser = null;
+
+  const api = async (path, options = {}) => {
+    const response = await fetch(path, {
+      credentials: 'same-origin',
+      ...options,
+      headers: options.body instanceof FormData
+        ? options.headers
+        : { 'content-type': 'application/json', ...(options.headers || {}) },
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || 'No se pudo completar la operacion');
+    return payload;
+  };
+
+  const buildMapsUrl = (address) =>
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address.trim())}`;
+
+  const readLocation = async () => {
+    try {
+      const { location } = await api('/api/settings/location');
+      return location || defaultLocation;
+    } catch {
+      return defaultLocation;
+    }
+  };
+
+  const formatSize = (bytes) => {
+    if (!bytes) return '0 KB';
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const formatDate = (value) => {
+    if (!value) return 'Sin fecha';
+    return new Intl.DateTimeFormat('es-PY', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
+  };
+
+  const escapeHtml = (value) =>
+    String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+  const flattenCvs = (store) =>
+    Object.entries(store).flatMap(([serviceId, cvs]) =>
+      (Array.isArray(cvs) ? cvs : []).map((cv) => ({ ...cv, serviceId }))
+    );
+
+  const getServiceName = (serviceId) =>
+    document.querySelector(`[data-admin-service][data-service-id="${CSS.escape(serviceId)}"]`)?.getAttribute('data-service-name') || serviceId;
+
+  const setText = (selector, value) => {
+    const node = document.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const loadCvs = async () => {
+    const { cvs } = await api('/api/cvs');
+    cvStore = cvs || {};
+  };
+
+  const renderLocation = async () => {
+    const location = await readLocation();
+    const isDefault = location.address === defaultLocation.address && location.mapsUrl === defaultLocation.mapsUrl;
+
+    if (locationAddressInput) locationAddressInput.value = location.address;
+    if (locationUrlPreview) {
+      locationUrlPreview.href = location.mapsUrl;
+      locationUrlPreview.textContent = location.mapsUrl;
+    }
+    if (locationOpen) locationOpen.href = location.mapsUrl;
+    if (locationStatus) {
+      locationStatus.textContent = isDefault
+        ? 'Usando la direccion original del sitio.'
+        : `Guardado en el servidor - ${formatDate(location.updatedAt)}`;
+    }
+  };
+
+  const renderDashboard = (store, total) => {
+    const serviceEntries = Array.from(document.querySelectorAll('[data-admin-service]')).map((card) => {
+      const serviceId = card.getAttribute('data-service-id');
+      return {
+        id: serviceId,
+        name: card.getAttribute('data-service-name') || serviceId,
+        count: (store[serviceId] || []).length,
+      };
+    });
+
+    const allCvs = flattenCvs(store);
+    const covered = serviceEntries.filter((entry) => entry.count > 0).length;
+    const storageUsed = allCvs.reduce((sum, cv) => sum + (cv.size || 0), 0);
+    const maxCount = Math.max(1, ...serviceEntries.map((entry) => entry.count));
+    const topService = serviceEntries.reduce((best, entry) => (entry.count > best.count ? entry : best), { name: 'Sin datos', count: 0 });
+    const lastUpload = allCvs
+      .filter((cv) => cv.uploadedAt)
+      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0];
+
+    setText('[data-total-cvs]', String(total));
+    setText('[data-covered-services]', String(covered));
+    setText('[data-storage-used]', `${formatSize(storageUsed)} usados`);
+    setText('[data-top-service]', topService.count ? `${topService.name} (${topService.count})` : 'Sin datos');
+    setText(
+      '[data-last-upload]',
+      lastUpload ? `${lastUpload.name} - ${getServiceName(lastUpload.serviceId)} - ${formatDate(lastUpload.uploadedAt)}` : 'Sin cargas todavia'
+    );
+
+    document.querySelectorAll('[data-chart-row]').forEach((row) => {
+      const serviceId = row.getAttribute('data-service-id');
+      const count = (store[serviceId] || []).length;
+      const percent = Math.round((count / maxCount) * 100);
+      row.querySelector('[data-chart-count]').textContent = String(count);
+      row.querySelector('[data-chart-bar]').style.width = `${percent}%`;
+    });
+  };
+
+  const renderAdmin = async () => {
+    await loadCvs();
+    const store = cvStore;
+    let total = 0;
+
+    document.querySelectorAll('[data-admin-service]').forEach((card) => {
+      const serviceId = card.getAttribute('data-service-id');
+      const list = card.querySelector('[data-cv-list]');
+      const countNode = card.querySelector('[data-service-count]');
+      const cvs = store[serviceId] || [];
+      total += cvs.length;
+
+      if (countNode) countNode.textContent = `${cvs.length} ${cvs.length === 1 ? 'CV' : 'CVs'}`;
+      if (!list) return;
+
+      if (cvs.length === 0) {
+        list.innerHTML = '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay CVs cargados.</p>';
+        return;
+      }
+
+      list.innerHTML = cvs
+        .map(
+          (cv) => `
+            <div class="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2">
+              <a href="${cv.url}" download="${escapeHtml(cv.name)}" target="_blank" rel="noopener" class="min-w-0 text-sm font-semibold text-cream hover:text-gold-300 transition">
+                <span class="block truncate">${escapeHtml(cv.name)}</span>
+                <span class="text-xs font-normal text-cream/45">${formatSize(cv.size)} - ${formatDate(cv.uploadedAt)}</span>
+              </a>
+              <button type="button" class="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-cream/60 hover:border-gold-400/50 hover:text-gold-300 transition" data-remove-cv="${cv.id}">
+                Quitar
+              </button>
+            </div>
+          `
+        )
+        .join('');
+    });
+
+    renderDashboard(store, total);
+    await renderLocation();
+  };
+
+  const showAdmin = async (user) => {
+    currentUser = user;
+    loginScreen?.classList.add('hidden');
+    adminApp?.classList.remove('hidden');
+    setText('[data-session-user]', user?.name || user?.username || 'admin');
+    await renderAdmin();
+  };
+
+  const showLogin = () => {
+    adminApp?.classList.add('hidden');
+    loginScreen?.classList.remove('hidden');
+  };
+
+  const bootstrap = async () => {
+    try {
+      const { user } = await api('/api/auth/me');
+      await showAdmin(user);
+    } catch {
+      showLogin();
+    }
+  };
+
+  bootstrap();
+
+  loginForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(loginForm);
+    const username = String(formData.get('username') || '').trim();
+    const password = String(formData.get('password') || '');
+
+    try {
+      const { user } = await api('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+      });
+      loginError?.classList.add('hidden');
+      await showAdmin(user);
+    } catch {
+      loginError?.classList.remove('hidden');
+    }
+  });
+
+  document.querySelector('[data-logout]')?.addEventListener('click', async () => {
+    await api('/api/auth/logout', { method: 'POST', body: '{}' }).catch(() => null);
+    currentUser = null;
+    showLogin();
+  });
+
+  document.querySelectorAll('[data-file-input]').forEach((input) => {
+    input.addEventListener('change', async () => {
+      const card = input.closest('[data-admin-service]');
+      const serviceId = card?.getAttribute('data-service-id');
+      const files = Array.from(input.files || []);
+      if (!serviceId || files.length === 0) return;
+
+      const body = new FormData();
+      body.append('serviceId', serviceId);
+      files.forEach((file) => body.append('files', file));
+
+      try {
+        await api('/api/admin/cvs', { method: 'POST', body });
+        await renderAdmin();
+      } catch (error) {
+        alert(error.message || 'No se pudieron guardar los CVs.');
+      }
+
+      input.value = '';
+    });
+  });
+
+  document.addEventListener('click', async (event) => {
+    const removeButton = event.target.closest('[data-remove-cv]');
+    if (removeButton) {
+      const cvId = removeButton.getAttribute('data-remove-cv');
+      await api(`/api/admin/cvs/${encodeURIComponent(cvId)}`, { method: 'DELETE' });
+      await renderAdmin();
+      return;
+    }
+
+    const clearServiceButton = event.target.closest('[data-clear-service]');
+    if (clearServiceButton) {
+      const card = clearServiceButton.closest('[data-admin-service]');
+      const serviceId = card?.getAttribute('data-service-id');
+      await api(`/api/admin/cvs?serviceId=${encodeURIComponent(serviceId)}`, { method: 'DELETE' });
+      await renderAdmin();
+      return;
+    }
+
+    const clearAllButton = event.target.closest('[data-clear-all]');
+    if (clearAllButton && confirm('Quieres eliminar todos los CVs cargados en el servidor?')) {
+      await api('/api/admin/cvs', { method: 'DELETE' });
+      await renderAdmin();
+    }
+  });
+
+  locationAddressInput?.addEventListener('input', () => {
+    const address = locationAddressInput.value.trim() || defaultLocation.address;
+    const mapsUrl = buildMapsUrl(address);
+
+    if (locationUrlPreview) {
+      locationUrlPreview.href = mapsUrl;
+      locationUrlPreview.textContent = mapsUrl;
+    }
+    if (locationOpen) locationOpen.href = mapsUrl;
+    if (locationStatus) locationStatus.textContent = 'Vista previa sin guardar.';
+  });
+
+  locationForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const address = locationAddressInput?.value.trim();
+
+    if (!address) {
+      alert('Escribe una direccion para generar el enlace de Google Maps.');
+      locationAddressInput?.focus();
+      return;
+    }
+
+    await api('/api/admin/settings/location', {
+      method: 'PUT',
+      body: JSON.stringify({
+        address,
+        mapsUrl: buildMapsUrl(address),
+      }),
+    });
+    await renderLocation();
+  });
+
+  document.querySelector('[data-location-reset]')?.addEventListener('click', async () => {
+    await api('/api/admin/settings/location', { method: 'DELETE' });
+    await renderLocation();
+  });
+</script>
+
+<style>
+  .admin-shell {
+    font-family: var(--font-sans);
+  }
+
+  .admin-login-screen.hidden,
+  [data-admin-app].hidden {
+    display: none;
+  }
+
+  .admin-login-screen {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding: 1.25rem;
+    background:
+      radial-gradient(45rem 32rem at 74% 8%, rgba(212, 175, 55, 0.16), transparent),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.055), transparent 36%),
+      var(--color-ink-950);
+  }
+
+  .admin-login-card,
+  .admin-panel,
+  .admin-metric {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 28px 90px -42px rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(12px);
+  }
+
+  .admin-login-card {
+    width: min(100%, 27rem);
+    border-radius: 1.5rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .admin-back-link {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-gold-300);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    transition: color 0.2s ease;
+  }
+
+  .admin-back-link:hover {
+    color: var(--color-gold-200);
+  }
+
+  .admin-section-kicker {
+    display: flex;
+    width: fit-content;
+    margin-top: 1.65rem;
+    line-height: 1.25;
+  }
+
+  .admin-input {
+    width: 100%;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(11, 11, 15, 0.58);
+    padding: 0.85rem 0.95rem;
+    color: var(--color-cream);
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .admin-input:focus {
+    border-color: color-mix(in srgb, var(--color-gold-400) 65%, transparent);
+    background: rgba(11, 11, 15, 0.78);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.14);
+  }
+
+  .admin-dashboard {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .admin-metric,
+  .admin-panel {
+    border-radius: 1.25rem;
+  }
+
+  .admin-metric {
+    min-height: 9rem;
+    padding: 1.1rem;
+  }
+
+  .admin-metric-icon {
+    display: grid;
+    width: 2.4rem;
+    height: 2.4rem;
+    place-items: center;
+    border-radius: 0.85rem;
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--color-gold-300);
+  }
+
+  .admin-metric-label {
+    margin-top: 1.1rem;
+    color: rgba(247, 245, 240, 0.55);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .admin-metric-value {
+    margin-top: 0.35rem;
+    color: var(--color-gold-300);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
+  .admin-detail-row {
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.035);
+    padding: 0.85rem;
+  }
+
+  .admin-detail-row dt {
+    color: rgba(247, 245, 240, 0.48);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .admin-detail-row dd {
+    margin-top: 0.35rem;
+    color: rgba(247, 245, 240, 0.78);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .admin-location-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin-location-preview {
+    display: flex;
+    min-width: 0;
+    gap: 0.85rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(212, 175, 55, 0.075);
+    padding: 0.9rem;
+  }
+
+  .admin-location-icon {
+    display: grid;
+    width: 2.45rem;
+    height: 2.45rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.8rem;
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--color-gold-300);
+  }
+
+  .admin-chart-row [data-chart-bar] {
+    min-width: 0.35rem;
+    transition: width 0.25s ease;
+  }
+
+  .admin-card {
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .admin-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-gold-400) 40%, transparent);
+    background: rgba(255, 255, 255, 0.055);
+  }
+
+  @media (max-width: 920px) {
+    .admin-dashboard {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .admin-dashboard {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -42,6 +42,53 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
   </head>
   <body>
     <slot />
+    <script is:inline>
+      // Shield the "AVC" brand from browser auto-translation everywhere.
+      // (In Portuguese, translators expand "AVC" into "accidente cerebrovascular".)
+      (function protectBrand() {
+        const BRAND = /AVC(?:\s+Soluciones(?:\s+Empresariales)?)?/g;
+        const run = () => {
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+              if (!node.nodeValue || !node.nodeValue.includes('AVC')) return NodeFilter.FILTER_REJECT;
+              let el = node.parentElement;
+              while (el) {
+                const tag = el.tagName;
+                if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+                if (el.getAttribute('translate') === 'no') return NodeFilter.FILTER_REJECT;
+                el = el.parentElement;
+              }
+              return NodeFilter.FILTER_ACCEPT;
+            },
+          });
+          const targets = [];
+          while (walker.nextNode()) targets.push(walker.currentNode);
+
+          for (const node of targets) {
+            const text = node.nodeValue;
+            const frag = document.createDocumentFragment();
+            let last = 0;
+            let m;
+            BRAND.lastIndex = 0;
+            while ((m = BRAND.exec(text)) !== null) {
+              if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+              const span = document.createElement('span');
+              span.setAttribute('translate', 'no');
+              span.textContent = m[0];
+              frag.appendChild(span);
+              last = m.index + m[0].length;
+            }
+            if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+            node.parentNode.replaceChild(frag, node);
+          }
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', run);
+        } else {
+          run();
+        }
+      })();
+    </script>
     <a
       href={social.whatsapp}
       target="_blank"

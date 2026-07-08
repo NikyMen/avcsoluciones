@@ -33,10 +33,14 @@ const flagImages: Record<Lang, string> = {
       data-bar
     >
       <!-- Logo -->
-      <a href={`${base}/`} class="flex items-center gap-2.5 shrink-0">
-        <img src="/images/logo-icon.png" alt="AVC Soluciones" class="h-9 w-9 rounded-lg object-contain" />
-        <span class="font-display font-semibold text-lg leading-none" data-logo-text translate="no">
-          AVC <span class="text-gold-400">Soluciones</span>
+      <a href={`${base}/`} class="flex items-center gap-2.5 min-w-0">
+        <img src="/images/logo-icon.png" alt="AVC Soluciones Empresariales" class="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <span
+          class="flex flex-col font-display font-semibold leading-tight text-sm sm:block sm:text-lg sm:leading-none"
+          data-logo-text
+          translate="no"
+        >
+          <span>Soluciones </span><span class="text-gold-400">Empresariales</span>
         </span>
       </a>
 

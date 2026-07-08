@@ -46,7 +46,11 @@
   }
 }
 
-/* ===== Reusable utilities ===== */
+/* ===== Reusable utilities =====
+   Wrapped in @layer components so Tailwind utility classes (e.g. `hidden`,
+   `sm:inline-flex`, `w-full`) always win over these base component styles.
+   Without a layer these rules are "unlayered" and would override utilities. */
+@layer components {
 .container-x {
   width: 100%;
   max-width: 1200px;
@@ -97,6 +101,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-gold-600);
+}
 }
 
 /* Reveal-on-scroll animation */

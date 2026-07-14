@@ -17,6 +17,8 @@ const defaultDb = {
   users: [],
   sessions: [],
   cvs: [],
+  teamProfiles: [],
+  serviceProfiles: {},
   settings: {},
 };
 

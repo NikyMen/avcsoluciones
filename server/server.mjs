@@ -23,6 +23,65 @@ const allowedMimeTypes = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ]);
 const allowedExtensions = new Set(['.pdf', '.doc', '.docx']);
+const allowedImageMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const allowedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+
+const seedTeamProfiles = [
+  {
+    id: 'ariel-fretes',
+    name: 'C.P. Hugo Ariel Fretes',
+    role: 'Contador Publico',
+    specialty: 'Especialista en Tributacion y Asesoria Impositiva',
+    description:
+      'Contador Publico con mas de 20 anos de experiencia en contabilidad, tributacion, auditoria interna, control interno, finanzas y reestructuracion de procesos administrativos. Ha liderado proyectos de implementacion y optimizacion de sistemas contables, financieros y de gestion, fortaleciendo el control organizacional y el cumplimiento normativo. Socio Director de AVC Soluciones Empresariales, brinda asesoria integral a empresas nacionales e inversionistas extranjeros en materia contable, tributaria, financiera, societaria y de organizacion empresarial.',
+    imageUrl: '/images/team/ariel.jpeg',
+    createdAt: '2026-07-13T00:00:00.000Z',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  },
+  {
+    id: 'virgilio-rodas',
+    name: 'Lic. Virgilio Rodas',
+    role: 'Licenciado en Ciencias Contables',
+    specialty: 'Asesoria contable y tributaria',
+    description:
+      'Profesional con mas de 8 anos de experiencia en contabilidad e impuestos, asesoria contable y tributaria y control interno. Ha acompanado a empresas de diversos sectores en la optimizacion de procesos administrativos y financieros, aportando soluciones orientadas al cumplimiento normativo y al crecimiento sostenible. Actualmente se desempena como Socio Director de AVC Soluciones Empresariales, liderando servicios de consultoria y asesoramiento integral para empresas en Paraguay.',
+    imageUrl: '/images/team/virgilio.jpeg',
+    createdAt: '2026-07-13T00:00:00.000Z',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  },
+  {
+    id: 'carlos-mereles',
+    name: 'C.P. Carlos Rafael Mereles Alvarez',
+    role: 'Contador Publico',
+    specialty: 'Gestion contable, tributaria y sistemas',
+    description:
+      'Contador Publico con mas de 7 anos de experiencia en contabilidad, tributacion y asesoria empresarial para empresas comerciales, de servicios e instituciones financieras. Posee solidos conocimientos en gestion contable, cumplimiento tributario y asesoria impositiva. Tambien cuenta con experiencia en implementacion de sistemas informaticos de gestion y capacitacion de equipos para optimizar procesos contables, administrativos y financieros.',
+    imageUrl: '/images/team/carlos.jpeg',
+    createdAt: '2026-07-13T00:00:00.000Z',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  },
+  {
+    id: 'derlis-mendoza',
+    name: 'C.P. Derlis Gustavo Mendoza Colman',
+    role: 'Contador Publico',
+    specialty: 'Contabilidad, auditoria y gestion financiera',
+    description:
+      'Profesional con mas de 7 anos de experiencia en contabilidad, auditoria, tributacion y gestion financiera en empresas de distintos sectores economicos. Ha participado en planificacion financiera, analisis de estados financieros, implementacion de controles internos y cumplimiento tributario. En AVC Soluciones Empresariales acompana proyectos de consultoria y asesoria contable, tributaria, financiera y de auditoria.',
+    imageUrl: '/images/team/derlis.jpeg',
+    createdAt: '2026-07-13T00:00:00.000Z',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  },
+];
+
+const defaultServiceProfiles = {
+  'service-0': ['ariel-fretes', 'virgilio-rodas', 'carlos-mereles', 'derlis-mendoza'],
+  'service-1': ['ariel-fretes', 'carlos-mereles', 'derlis-mendoza'],
+  'service-2': [],
+  'service-3': ['ariel-fretes'],
+  'service-4': [],
+  'service-5': ['carlos-mereles'],
+  'service-6': ['ariel-fretes', 'carlos-mereles'],
+};
 
 if (!sessionSecret || sessionSecret.length < 32) {
   console.error('Falta SESSION_SECRET o es demasiado corto. Usa al menos 32 caracteres.');
@@ -33,6 +92,8 @@ const defaultDb = {
   users: [],
   sessions: [],
   cvs: [],
+  teamProfiles: seedTeamProfiles,
+  serviceProfiles: defaultServiceProfiles,
   settings: {},
 };
 
@@ -70,7 +131,10 @@ const writeJsonFile = async (filePath, value) => {
 const readDb = async () => {
   await ensureStorage();
   const raw = await readFile(dbPath, 'utf8');
-  return { ...defaultDb, ...JSON.parse(raw) };
+  const db = { ...defaultDb, ...JSON.parse(raw) };
+  if (!Array.isArray(db.teamProfiles) || db.teamProfiles.length === 0) db.teamProfiles = seedTeamProfiles;
+  if (!db.serviceProfiles || typeof db.serviceProfiles !== 'object') db.serviceProfiles = defaultServiceProfiles;
+  return db;
 };
 
 const writeDb = (db) => writeJsonFile(dbPath, db);
@@ -233,6 +297,49 @@ const sanitizeFilename = (name) =>
     .replace(/^-|-$/g, '')
     .slice(0, 120) || 'cv';
 
+const sanitizeText = (value, max = 4000) => String(value || '').trim().slice(0, max);
+
+const serializeTeamProfile = (profile) => ({
+  id: profile.id,
+  name: profile.name,
+  role: profile.role || '',
+  specialty: profile.specialty || '',
+  description: profile.description || '',
+  imageUrl: profile.imageUrl || '',
+  size: profile.size || 0,
+  uploadedAt: profile.uploadedAt || profile.updatedAt || profile.createdAt || '',
+  updatedAt: profile.updatedAt || '',
+});
+
+const serializeTeamData = (db) => ({
+  profiles: db.teamProfiles.map(serializeTeamProfile),
+  assignments: db.serviceProfiles || {},
+});
+
+const readMultipartText = (parts, name, fallback = '') =>
+  sanitizeText(parts.find((part) => part.name === name)?.content.toString('utf8') ?? fallback);
+
+const saveProfileImage = async (file) => {
+  if (!file?.filename) return null;
+  const extension = extname(file.filename).toLowerCase();
+  if (!allowedImageExtensions.has(extension) || !allowedImageMimeTypes.has(file.contentType)) {
+    throw Object.assign(new Error('Solo se aceptan imagenes JPG, PNG o WEBP'), { status: 415 });
+  }
+  if (file.content.length > maxUploadBytes) {
+    throw Object.assign(new Error(`Cada imagen debe pesar hasta ${Math.round(maxUploadBytes / 1024 / 1024)} MB`), { status: 413 });
+  }
+  const id = randomBytes(16).toString('hex');
+  const storedName = `${Date.now()}-${id}${extension}`;
+  await writeFile(join(uploadDir, storedName), file.content);
+  return {
+    storedName,
+    imageUrl: `/uploads/${encodeURIComponent(storedName)}`,
+    mimeType: file.contentType,
+    size: file.content.length,
+    uploadedAt: new Date().toISOString(),
+  };
+};
+
 const parseMultipart = (buffer, contentType) => {
   const boundaryMatch = /boundary=(?:"([^"]+)"|([^;]+))/i.exec(contentType || '');
   const boundary = boundaryMatch?.[1] || boundaryMatch?.[2];
@@ -317,6 +424,117 @@ const handleApi = async (req, res, url) => {
     jsonResponse(res, 200, {
       cvs: await groupCvsByService(db.cvs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)), includePreview),
     });
+    return;
+  }
+
+  if (url.pathname === '/api/team-profiles' && req.method === 'GET') {
+    const db = await readDb();
+    jsonResponse(res, 200, serializeTeamData(db));
+    return;
+  }
+
+  if (url.pathname === '/api/admin/service-profiles' && req.method === 'PUT') {
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
+    const { serviceId, profileIds } = await parseJsonBody(req);
+    const cleanServiceId = String(serviceId || '').trim();
+    if (!/^service-\d+$/.test(cleanServiceId)) {
+      errorResponse(res, 400, 'Servicio invalido');
+      return;
+    }
+    const allowedIds = new Set(auth.db.teamProfiles.map((profile) => profile.id));
+    const nextIds = [...new Set(Array.isArray(profileIds) ? profileIds.map((id) => String(id)) : [])].filter((id) => allowedIds.has(id));
+    auth.db.serviceProfiles = { ...(auth.db.serviceProfiles || {}), [cleanServiceId]: nextIds };
+    await writeDb(auth.db);
+    jsonResponse(res, 200, serializeTeamData(auth.db));
+    return;
+  }
+
+  if (url.pathname === '/api/admin/team-profiles' && req.method === 'POST') {
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
+    const body = await readBody(req, maxUploadBytes + 1024 * 128);
+    const parts = parseMultipart(body, req.headers['content-type']);
+    const name = readMultipartText(parts, 'name');
+    if (!name) {
+      errorResponse(res, 400, 'El nombre es obligatorio');
+      return;
+    }
+    const image = parts.find((part) => part.name === 'image' && part.filename);
+    const savedImage = image ? await saveProfileImage(image) : null;
+    const now = new Date().toISOString();
+    const profile = {
+      id: randomBytes(12).toString('hex'),
+      name,
+      role: readMultipartText(parts, 'role'),
+      specialty: readMultipartText(parts, 'specialty'),
+      description: readMultipartText(parts, 'description'),
+      imageUrl: savedImage?.imageUrl || '',
+      storedName: savedImage?.storedName,
+      mimeType: savedImage?.mimeType,
+      size: savedImage?.size || 0,
+      uploadedAt: savedImage?.uploadedAt || '',
+      createdAt: now,
+      updatedAt: now,
+      updatedBy: auth.user.id,
+    };
+    auth.db.teamProfiles.push(profile);
+    await writeDb(auth.db);
+    jsonResponse(res, 201, { profile: serializeTeamProfile(profile), ...serializeTeamData(auth.db) });
+    return;
+  }
+
+  const profileMatch = /^\/api\/admin\/team-profiles\/([^/]+)$/.exec(url.pathname);
+  if (profileMatch && req.method === 'PUT') {
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
+    const profileId = decodeURIComponent(profileMatch[1]);
+    const profile = auth.db.teamProfiles.find((item) => item.id === profileId);
+    if (!profile) {
+      errorResponse(res, 404, 'Perfil no encontrado');
+      return;
+    }
+    const body = await readBody(req, maxUploadBytes + 1024 * 128);
+    const parts = parseMultipart(body, req.headers['content-type']);
+    const name = readMultipartText(parts, 'name', profile.name);
+    if (!name) {
+      errorResponse(res, 400, 'El nombre es obligatorio');
+      return;
+    }
+    const image = parts.find((part) => part.name === 'image' && part.filename);
+    const previousStoredName = profile.storedName;
+    const savedImage = image ? await saveProfileImage(image) : null;
+    Object.assign(profile, {
+      name,
+      role: readMultipartText(parts, 'role', profile.role),
+      specialty: readMultipartText(parts, 'specialty', profile.specialty),
+      description: readMultipartText(parts, 'description', profile.description),
+      updatedAt: new Date().toISOString(),
+      updatedBy: auth.user.id,
+      ...(savedImage || {}),
+    });
+    if (savedImage && previousStoredName) await rm(join(uploadDir, previousStoredName), { force: true });
+    await writeDb(auth.db);
+    jsonResponse(res, 200, { profile: serializeTeamProfile(profile), ...serializeTeamData(auth.db) });
+    return;
+  }
+
+  if (profileMatch && req.method === 'DELETE') {
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
+    const profileId = decodeURIComponent(profileMatch[1]);
+    const profile = auth.db.teamProfiles.find((item) => item.id === profileId);
+    if (!profile) {
+      errorResponse(res, 404, 'Perfil no encontrado');
+      return;
+    }
+    auth.db.teamProfiles = auth.db.teamProfiles.filter((item) => item.id !== profileId);
+    for (const [serviceId, ids] of Object.entries(auth.db.serviceProfiles || {})) {
+      auth.db.serviceProfiles[serviceId] = (Array.isArray(ids) ? ids : []).filter((id) => id !== profileId);
+    }
+    await writeDb(auth.db);
+    if (profile.storedName) await rm(join(uploadDir, profile.storedName), { force: true });
+    jsonResponse(res, 200, serializeTeamData(auth.db));
     return;
   }
 
@@ -470,7 +688,8 @@ const handleUploads = async (req, res, url) => {
   const storedName = decodeURIComponent(url.pathname.replace('/uploads/', ''));
   const db = await readDb();
   const cv = db.cvs.find((item) => item.storedName === storedName);
-  if (!cv) {
+  const profile = db.teamProfiles.find((item) => item.storedName === storedName);
+  if (!cv && !profile) {
     errorResponse(res, 404, 'Archivo no encontrado');
     return;
   }
@@ -479,7 +698,7 @@ const handleUploads = async (req, res, url) => {
     errorResponse(res, 400, 'Ruta invalida');
     return;
   }
-  await sendFile(res, filePath, cv.originalName);
+  await sendFile(res, filePath, cv?.originalName || profile?.name || storedName);
 };
 
 const handleStatic = async (req, res, url) => {

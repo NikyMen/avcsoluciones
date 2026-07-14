@@ -2,13 +2,18 @@ module.exports = {
   apps: [
     {
       name: 'avcsoluciones',
-      cwd: 'D:/dev/avcsoluciones',
-      script: 'node_modules/astro/astro.js',
-      args: 'preview --port 3550 --host',
+      cwd: '/var/www/avcsoluciones',
+      script: './server/server.mjs',
       interpreter: 'node',
       autorestart: true,
       env: {
         NODE_ENV: 'production',
+        PORT: 3550,
+        STATIC_DIR: './dist',
+        DATA_DIR: './data',
+        UPLOAD_DIR: './data/uploads',
+        DB_PATH: './data/db.json',
+        MAX_UPLOAD_MB: 10,
       },
     },
   ],

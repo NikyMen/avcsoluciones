@@ -70,3 +70,5 @@ Desktop.ini
 
 # Local assistant/tool settings
 .claude/settings.local.json
+.codex/
+.agents/

@@ -12,7 +12,7 @@ const languages = ['ES', 'EN', 'PT'];
   lang="es"
   htmlLang="es"
   title="Panel administrador | AVC Soluciones Empresariales"
-  description="Panel interno para administrar CVs asociados a los servicios de AVC Soluciones Empresariales."
+  description="Panel interno para administrar perfiles asociados a los servicios de AVC Soluciones Empresariales."
 >
   <main class="admin-shell min-h-screen bg-ink-950 text-cream">
     <section class="admin-login-screen" data-login-screen>
@@ -25,7 +25,7 @@ const languages = ['ES', 'EN', 'PT'];
           <p class="eyebrow !text-gold-300">Acceso interno</p>
           <h1 class="mt-4 text-4xl leading-tight">Panel administrador</h1>
           <p class="mt-4 text-sm leading-relaxed text-cream/62">
-            Ingresa con tu usuario para administrar CVs y revisar las estadisticas principales de la web.
+            Ingresa con tu usuario para administrar perfiles del equipo y revisar las estadisticas principales de la web.
           </p>
         </div>
 
@@ -73,9 +73,9 @@ const languages = ['ES', 'EN', 'PT'];
                 <Icon name="arrow" class="h-4 w-4 rotate-180" /> Volver al sitio
               </a>
               <p class="admin-section-kicker eyebrow !text-gold-300">Panel administrador</p>
-              <h1 class="mt-4 text-4xl sm:text-5xl leading-tight">Dashboard y CVs del equipo</h1>
+              <h1 class="mt-4 text-4xl sm:text-5xl leading-tight">Dashboard y equipo por servicio</h1>
               <p class="mt-4 text-cream/70 leading-relaxed">
-                Controla el contenido cargado en el navegador, revisa cobertura por servicio y actualiza los documentos que aparecen en la web publica.
+                Controla las fichas profesionales que aparecen en el sitio publico y asigna integrantes a cada servicio.
               </p>
             </div>
 
@@ -99,13 +99,13 @@ const languages = ['ES', 'EN', 'PT'];
 
           <article class="admin-metric">
             <span class="admin-metric-icon"><Icon name="download" class="h-5 w-5" /></span>
-            <p class="admin-metric-label">CVs cargados</p>
-            <p class="admin-metric-value" data-total-cvs>0</p>
+            <p class="admin-metric-label">Integrantes cargados</p>
+            <p class="admin-metric-value" data-total-profiles>0</p>
           </article>
 
           <article class="admin-metric">
             <span class="admin-metric-icon"><Icon name="check" class="h-5 w-5" /></span>
-            <p class="admin-metric-label">Servicios con CV</p>
+            <p class="admin-metric-label">Servicios con equipo</p>
             <p class="admin-metric-value"><span data-covered-services>0</span>/{services.length}</p>
           </article>
 
@@ -120,7 +120,7 @@ const languages = ['ES', 'EN', 'PT'];
           <section class="admin-panel p-5">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Cobertura de CVs</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Cobertura de equipo</p>
                 <h2 class="mt-1 font-display text-2xl">Distribucion por servicio</h2>
               </div>
               <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-cream/55" data-storage-used>0 KB usados</span>
@@ -146,11 +146,11 @@ const languages = ['ES', 'EN', 'PT'];
 
             <dl class="mt-5 space-y-4">
               <div class="admin-detail-row">
-                <dt>Ultimo CV cargado</dt>
+                <dt>Ultimo perfil actualizado</dt>
                 <dd data-last-upload>Sin cargas todavia</dd>
               </div>
               <div class="admin-detail-row">
-                <dt>Servicio con mas CVs</dt>
+                <dt>Servicio con mas integrantes</dt>
                 <dd data-top-service>Sin datos</dd>
               </div>
               <div class="admin-detail-row">
@@ -165,7 +165,7 @@ const languages = ['ES', 'EN', 'PT'];
 
             <div class="mt-6 flex flex-wrap gap-3">
               <a href="/#servicios" class="btn btn-gold !py-2 !px-4 text-sm">Ver sitio publico</a>
-              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-clear-all>Limpiar CVs</button>
+              <a href="#gestion-equipo" class="btn btn-outline !py-2 !px-4 text-sm">Gestionar equipo</a>
             </div>
           </aside>
         </div>
@@ -233,66 +233,137 @@ const languages = ['ES', 'EN', 'PT'];
         </section>
       </section>
 
-      <section class="container-x pb-12 sm:pb-16">
+      <section id="gestion-equipo" class="container-x pb-12 sm:pb-16">
         <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Gestion de documentos</p>
-            <h2 class="mt-1 font-display text-3xl">CVs por servicio</h2>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Gestion de equipo</p>
+            <h2 class="mt-1 font-display text-3xl">Perfiles profesionales</h2>
           </div>
           <p class="max-w-xl text-sm leading-relaxed text-cream/55">
-            Los documentos se guardan en el servidor y quedan disponibles para todos los visitantes desde los modales de servicios.
+            Edita la foto, el nombre, el cargo y la descripcion de cada integrante. Estas fichas se reutilizan en los servicios donde esten asignadas.
           </p>
         </div>
 
-        <div class="grid gap-5 lg:grid-cols-2">
-          {services.map((service, i) => (
-            <article
-              class="admin-card rounded-2xl border border-white/10 bg-white/[0.035] p-6 shadow-soft"
-              data-admin-service
-              data-service-id={`service-${i}`}
-              data-service-name={service.name}
-            >
-              <div class="flex items-start gap-4">
-                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gold-400/15 text-gold-400">
-                  <Icon name={service.icon} class="h-6 w-6" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-start justify-between gap-3">
-                    <h3 class="font-display text-xl leading-tight">{service.name}</h3>
-                    <span class="rounded-full border border-white/10 px-2.5 py-1 text-xs font-semibold text-cream/50" data-service-count>0 CVs</span>
-                  </div>
-                  <p class="mt-2 text-sm leading-relaxed text-cream/65">{service.desc}</p>
-                  <p class="mt-3 text-xs text-gold-300/90">
-                    <span class="font-semibold uppercase tracking-wider">{t.services.targetLabel}:</span> {service.target}
-                  </p>
-                </div>
+        <div class="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
+          <section class="admin-panel p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Biblioteca</p>
+                <h3 class="mt-1 font-display text-2xl">Integrantes editables</h3>
               </div>
+              <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-cream/55" data-profile-library-count>0 perfiles</span>
+            </div>
+            <div class="mt-5 grid gap-4" data-profile-list></div>
 
-              <div class="mt-6 rounded-2xl border border-dashed border-gold-400/35 bg-ink-950/45 p-4">
-                <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl px-4 py-6 text-center hover:bg-white/[0.03] transition">
-                  <span class="grid h-11 w-11 place-items-center rounded-full bg-gold-400 text-ink-950">
-                    <Icon name="download" class="h-5 w-5" />
-                  </span>
-                  <span class="font-semibold">Agregar CVs a este servicio</span>
-                  <span class="text-xs text-cream/50">PDF, DOC o DOCX. Puedes seleccionar varios archivos.</span>
-                  <input class="sr-only" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple data-file-input />
+            <form class="admin-profile-form mt-5 rounded-2xl border border-dashed border-gold-400/30 bg-ink-950/45 p-4" data-new-profile-form>
+              <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Nuevo integrante</p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <label class="block sm:col-span-2">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Nombre</span>
+                  <input class="admin-input mt-2" name="name" type="text" required placeholder="Nombre del integrante" />
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Cargo</span>
+                  <input class="admin-input mt-2" name="role" type="text" placeholder="Contador Publico" />
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Especialidad</span>
+                  <input class="admin-input mt-2" name="specialty" type="text" placeholder="Tributacion y auditoria" />
+                </label>
+                <label class="block sm:col-span-2">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Descripcion</span>
+                  <textarea class="admin-input mt-2 min-h-32 resize-y" name="description" required placeholder="Resumen profesional que se vera en la web publica."></textarea>
+                </label>
+                <label class="block sm:col-span-2">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Imagen</span>
+                  <input class="admin-file mt-2" name="image" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" />
                 </label>
               </div>
+              <button type="submit" class="btn btn-gold mt-4 !py-2 !px-4 text-sm">Crear integrante</button>
+            </form>
+          </section>
 
-              <div class="mt-5">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="text-xs font-semibold uppercase tracking-wider text-cream/50">Documentos asociados</p>
-                  <button type="button" class="text-xs font-semibold text-gold-300 hover:text-gold-200 transition" data-clear-service>
-                    Limpiar servicio
-                  </button>
+          <section class="admin-panel p-5">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Asignaciones</p>
+              <h3 class="mt-1 font-display text-2xl">Integrantes por servicio</h3>
+              <p class="mt-2 text-sm leading-relaxed text-cream/55">
+                Selecciona por nombre los integrantes que corresponden a cada servicio y revisa como queda la ficha publica.
+              </p>
+            </div>
+            <div class="mt-5 grid gap-5" data-service-assignment-list>
+              {services.map((service, i) => (
+                <article class="admin-service-assignment" data-admin-service data-service-id={`service-${i}`} data-service-name={service.name}>
+                  <div class="admin-service-preview">
+                    <div class="flex items-start gap-4">
+                      <div class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gold-400/15 text-gold-400">
+                        <Icon name={service.icon} class="h-6 w-6" />
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                          <h4 class="font-display text-xl leading-tight">{service.name}</h4>
+                          <span class="rounded-full border border-white/10 px-2.5 py-1 text-xs font-semibold text-cream/50" data-service-count>0 integrantes</span>
+                        </div>
+                        <p class="mt-2 text-sm leading-relaxed text-cream/65">{service.desc}</p>
+                        <p class="mt-3 text-xs text-gold-300/90">
+                          <span class="font-semibold uppercase tracking-wider">{t.services.targetLabel}:</span> {service.target}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="mt-4" data-assigned-preview></div>
+                  </div>
+
+                  <details class="admin-assign-menu mt-4" data-profile-menu>
+                    <summary>
+                      <span>Asignar colaborador</span>
+                    </summary>
+                    <div class="admin-assign-options" data-profile-menu-options></div>
+                  </details>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <template data-profile-card-template>
+          <article class="admin-profile-card" data-profile-card>
+            <form data-profile-form>
+              <div class="admin-profile-edit-grid">
+                <div class="admin-profile-media">
+                  <img src="" alt="" class="admin-profile-image" data-profile-image />
+                  <label class="mt-3 block">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Cambiar imagen</span>
+                    <input class="admin-file mt-2" name="image" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" />
+                  </label>
                 </div>
-                <div class="mt-3 space-y-2" data-cv-list>
-                  <p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay CVs cargados.</p>
+                <div class="admin-profile-fields">
+                  <label class="block">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Nombre</span>
+                    <input class="admin-input mt-2" name="name" type="text" required />
+                  </label>
+                  <div class="grid gap-3">
+                    <label class="block">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Cargo</span>
+                      <input class="admin-input mt-2" name="role" type="text" />
+                    </label>
+                    <label class="block">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Especialidad</span>
+                      <input class="admin-input mt-2" name="specialty" type="text" />
+                    </label>
+                  </div>
+                  <label class="block">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Descripcion</span>
+                    <textarea class="admin-input mt-2 min-h-36 resize-y" name="description" required></textarea>
+                  </label>
+                  <div class="flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-gold !py-2 !px-4 text-sm">Guardar cambios</button>
+                    <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-delete-profile>Eliminar</button>
+                  </div>
                 </div>
               </div>
-            </article>
-          ))}
-        </div>
+            </form>
+          </article>
+        </template>
       </section>
     </section>
   </main>
@@ -312,7 +383,8 @@ const languages = ['ES', 'EN', 'PT'];
     address: locationForm?.getAttribute('data-default-address') || '',
     mapsUrl: locationForm?.getAttribute('data-default-maps-url') || '',
   };
-  let cvStore = {};
+  let teamProfiles = [];
+  let teamAssignments = {};
   let currentUser = null;
 
   const api = async (path, options = {}) => {
@@ -365,10 +437,10 @@ const languages = ['ES', 'EN', 'PT'];
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
 
-  const flattenCvs = (store) =>
-    Object.entries(store).flatMap(([serviceId, cvs]) =>
-      (Array.isArray(cvs) ? cvs : []).map((cv) => ({ ...cv, serviceId }))
-    );
+  const assignedProfiles = (serviceId) => {
+    const ids = teamAssignments[serviceId] || [];
+    return ids.map((id) => teamProfiles.find((profile) => profile.id === id)).filter(Boolean);
+  };
 
   const getServiceName = (serviceId) =>
     document.querySelector(`[data-admin-service][data-service-id="${CSS.escape(serviceId)}"]`)?.getAttribute('data-service-name') || serviceId;
@@ -378,9 +450,10 @@ const languages = ['ES', 'EN', 'PT'];
     if (node) node.textContent = value;
   };
 
-  const loadCvs = async () => {
-    const { cvs } = await api('/api/cvs');
-    cvStore = cvs || {};
+  const loadTeam = async () => {
+    const { profiles, assignments } = await api('/api/team-profiles');
+    teamProfiles = Array.isArray(profiles) ? profiles : [];
+    teamAssignments = assignments || {};
   };
 
   const renderLocation = async () => {
@@ -400,81 +473,116 @@ const languages = ['ES', 'EN', 'PT'];
     }
   };
 
-  const renderDashboard = (store, total) => {
+  const renderDashboard = () => {
     const serviceEntries = Array.from(document.querySelectorAll('[data-admin-service]')).map((card) => {
       const serviceId = card.getAttribute('data-service-id');
       return {
         id: serviceId,
         name: card.getAttribute('data-service-name') || serviceId,
-        count: (store[serviceId] || []).length,
+        count: (teamAssignments[serviceId] || []).length,
       };
     });
 
-    const allCvs = flattenCvs(store);
     const covered = serviceEntries.filter((entry) => entry.count > 0).length;
-    const storageUsed = allCvs.reduce((sum, cv) => sum + (cv.size || 0), 0);
+    const storageUsed = teamProfiles.reduce((sum, profile) => sum + (profile.size || 0), 0);
     const maxCount = Math.max(1, ...serviceEntries.map((entry) => entry.count));
     const topService = serviceEntries.reduce((best, entry) => (entry.count > best.count ? entry : best), { name: 'Sin datos', count: 0 });
-    const lastUpload = allCvs
-      .filter((cv) => cv.uploadedAt)
-      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0];
+    const lastUpload = [...teamProfiles]
+      .filter((profile) => profile.updatedAt || profile.uploadedAt)
+      .sort((a, b) => new Date(b.updatedAt || b.uploadedAt).getTime() - new Date(a.updatedAt || a.uploadedAt).getTime())[0];
 
-    setText('[data-total-cvs]', String(total));
+    setText('[data-total-profiles]', String(teamProfiles.length));
     setText('[data-covered-services]', String(covered));
     setText('[data-storage-used]', `${formatSize(storageUsed)} usados`);
     setText('[data-top-service]', topService.count ? `${topService.name} (${topService.count})` : 'Sin datos');
     setText(
       '[data-last-upload]',
-      lastUpload ? `${lastUpload.name} - ${getServiceName(lastUpload.serviceId)} - ${formatDate(lastUpload.uploadedAt)}` : 'Sin cargas todavia'
+      lastUpload ? `${lastUpload.name} - ${formatDate(lastUpload.updatedAt || lastUpload.uploadedAt)}` : 'Sin cargas todavia'
     );
+    setText('[data-profile-library-count]', `${teamProfiles.length} ${teamProfiles.length === 1 ? 'perfil' : 'perfiles'}`);
 
     document.querySelectorAll('[data-chart-row]').forEach((row) => {
       const serviceId = row.getAttribute('data-service-id');
-      const count = (store[serviceId] || []).length;
+      const count = (teamAssignments[serviceId] || []).length;
       const percent = Math.round((count / maxCount) * 100);
       row.querySelector('[data-chart-count]').textContent = String(count);
       row.querySelector('[data-chart-bar]').style.width = `${percent}%`;
     });
   };
 
-  const renderAdmin = async () => {
-    await loadCvs();
-    const store = cvStore;
-    let total = 0;
+  const assignedPreviewMarkup = (profile) => `
+    <span class="admin-assigned-chip">
+      <span class="admin-assigned-dot" aria-hidden="true"></span>
+      <span>${escapeHtml(profile.name)}</span>
+    </span>
+  `;
 
+  const profileMenuOptionMarkup = (profile, selected) => `
+    <label class="admin-assign-option">
+      <input type="checkbox" value="${escapeHtml(profile.id)}" ${selected ? 'checked' : ''} data-service-profile-checkbox />
+      <span>${escapeHtml(profile.name)}</span>
+    </label>
+  `;
+
+  const renderProfiles = () => {
+    const list = document.querySelector('[data-profile-list]');
+    const template = document.querySelector('[data-profile-card-template]');
+    if (!list || !template) return;
+    list.innerHTML = '';
+
+    if (!teamProfiles.length) {
+      list.innerHTML = '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay integrantes cargados.</p>';
+      return;
+    }
+
+    teamProfiles.forEach((profile) => {
+      const fragment = template.content.cloneNode(true);
+      const card = fragment.querySelector('[data-profile-card]');
+      const form = fragment.querySelector('[data-profile-form]');
+      card.dataset.profileId = profile.id;
+      form.dataset.profileId = profile.id;
+      fragment.querySelector('[data-profile-image]').src = profile.imageUrl || '/images/logo-icon.png';
+      fragment.querySelector('[data-profile-image]').alt = profile.name;
+      form.elements.name.value = profile.name || '';
+      form.elements.role.value = profile.role || '';
+      form.elements.specialty.value = profile.specialty || '';
+      form.elements.description.value = profile.description || '';
+      list.appendChild(fragment);
+    });
+  };
+
+  const renderServiceAssignments = () => {
     document.querySelectorAll('[data-admin-service]').forEach((card) => {
       const serviceId = card.getAttribute('data-service-id');
-      const list = card.querySelector('[data-cv-list]');
+      const selectedIds = new Set(teamAssignments[serviceId] || []);
+      const menuOptions = card.querySelector('[data-profile-menu-options]');
+      const preview = card.querySelector('[data-assigned-preview]');
       const countNode = card.querySelector('[data-service-count]');
-      const cvs = store[serviceId] || [];
-      total += cvs.length;
+      const selectedProfiles = assignedProfiles(serviceId);
 
-      if (countNode) countNode.textContent = `${cvs.length} ${cvs.length === 1 ? 'CV' : 'CVs'}`;
-      if (!list) return;
-
-      if (cvs.length === 0) {
-        list.innerHTML = '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay CVs cargados.</p>';
-        return;
+      if (countNode) {
+        countNode.textContent = `${selectedProfiles.length} ${selectedProfiles.length === 1 ? 'integrante' : 'integrantes'}`;
       }
-
-      list.innerHTML = cvs
-        .map(
-          (cv) => `
-            <div class="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2">
-              <a href="${cv.url}" download="${escapeHtml(cv.name)}" target="_blank" rel="noopener" class="min-w-0 text-sm font-semibold text-cream hover:text-gold-300 transition">
-                <span class="block truncate">${escapeHtml(cv.name)}</span>
-                <span class="text-xs font-normal text-cream/45">${formatSize(cv.size)} - ${formatDate(cv.uploadedAt)}</span>
-              </a>
-              <button type="button" class="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-cream/60 hover:border-gold-400/50 hover:text-gold-300 transition" data-remove-cv="${cv.id}">
-                Quitar
-              </button>
-            </div>
-          `
-        )
-        .join('');
+      if (menuOptions) {
+        menuOptions.innerHTML = teamProfiles.length
+          ? teamProfiles
+              .map((profile) => profileMenuOptionMarkup(profile, selectedIds.has(profile.id)))
+              .join('')
+          : '<p class="px-3 py-2 text-sm text-cream/45">Carga integrantes para poder asignarlos.</p>';
+      }
+      if (preview) {
+        preview.innerHTML = selectedProfiles.length
+          ? selectedProfiles.map(assignedPreviewMarkup).join('')
+          : '<p class="text-sm text-cream/45">Sin colaboradores asignados.</p>';
+      }
     });
+  };
 
-    renderDashboard(store, total);
+  const renderAdmin = async () => {
+    await loadTeam();
+    renderProfiles();
+    renderServiceAssignments();
+    renderDashboard();
     await renderLocation();
   };
 
@@ -526,51 +634,60 @@ const languages = ['ES', 'EN', 'PT'];
     showLogin();
   });
 
-  document.querySelectorAll('[data-file-input]').forEach((input) => {
-    input.addEventListener('change', async () => {
-      const card = input.closest('[data-admin-service]');
-      const serviceId = card?.getAttribute('data-service-id');
-      const files = Array.from(input.files || []);
-      if (!serviceId || files.length === 0) return;
+  document.querySelector('[data-new-profile-form]')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    try {
+      await api('/api/admin/team-profiles', { method: 'POST', body: new FormData(form) });
+      form.reset();
+      await renderAdmin();
+    } catch (error) {
+      alert(error.message || 'No se pudo crear el integrante.');
+    }
+  });
 
-      const body = new FormData();
-      body.append('serviceId', serviceId);
-      files.forEach((file) => body.append('files', file));
+  document.addEventListener('submit', async (event) => {
+    const form = event.target.closest('[data-profile-form]');
+    if (!form) return;
+    event.preventDefault();
+    const profileId = form.dataset.profileId;
+    try {
+      await api(`/api/admin/team-profiles/${encodeURIComponent(profileId)}`, { method: 'PUT', body: new FormData(form) });
+      await renderAdmin();
+    } catch (error) {
+      alert(error.message || 'No se pudo guardar el perfil.');
+    }
+  });
 
-      try {
-        await api('/api/admin/cvs', { method: 'POST', body });
-        await renderAdmin();
-      } catch (error) {
-        alert(error.message || 'No se pudieron guardar los CVs.');
-      }
-
-      input.value = '';
-    });
+  document.addEventListener('change', async (event) => {
+    const checkbox = event.target.closest('[data-service-profile-checkbox]');
+    if (!checkbox) return;
+    const card = checkbox.closest('[data-admin-service]');
+    const serviceId = card?.getAttribute('data-service-id');
+    const profileIds = Array.from(card.querySelectorAll('[data-service-profile-checkbox]:checked')).map((input) => input.value);
+    try {
+      const payload = await api('/api/admin/service-profiles', {
+        method: 'PUT',
+        body: JSON.stringify({ serviceId, profileIds }),
+      });
+      teamProfiles = payload.profiles || teamProfiles;
+      teamAssignments = payload.assignments || teamAssignments;
+      renderServiceAssignments();
+      renderDashboard();
+    } catch (error) {
+      alert(error.message || 'No se pudo actualizar el servicio.');
+      await renderAdmin();
+    }
   });
 
   document.addEventListener('click', async (event) => {
-    const removeButton = event.target.closest('[data-remove-cv]');
-    if (removeButton) {
-      const cvId = removeButton.getAttribute('data-remove-cv');
-      await api(`/api/admin/cvs/${encodeURIComponent(cvId)}`, { method: 'DELETE' });
-      await renderAdmin();
-      return;
-    }
-
-    const clearServiceButton = event.target.closest('[data-clear-service]');
-    if (clearServiceButton) {
-      const card = clearServiceButton.closest('[data-admin-service]');
-      const serviceId = card?.getAttribute('data-service-id');
-      await api(`/api/admin/cvs?serviceId=${encodeURIComponent(serviceId)}`, { method: 'DELETE' });
-      await renderAdmin();
-      return;
-    }
-
-    const clearAllButton = event.target.closest('[data-clear-all]');
-    if (clearAllButton && confirm('Quieres eliminar todos los CVs cargados en el servidor?')) {
-      await api('/api/admin/cvs', { method: 'DELETE' });
-      await renderAdmin();
-    }
+    const deleteButton = event.target.closest('[data-delete-profile]');
+    if (!deleteButton) return;
+    const form = deleteButton.closest('[data-profile-form]');
+    const profileId = form?.dataset.profileId;
+    if (!profileId || !confirm('Quieres eliminar este integrante y quitarlo de los servicios?')) return;
+    await api(`/api/admin/team-profiles/${encodeURIComponent(profileId)}`, { method: 'DELETE' });
+    await renderAdmin();
   });
 
   locationAddressInput?.addEventListener('input', () => {
@@ -690,6 +807,191 @@ const languages = ['ES', 'EN', 'PT'];
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.14);
   }
 
+  .admin-file {
+    width: 100%;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(11, 11, 15, 0.58);
+    padding: 0.7rem;
+    color: rgba(247, 245, 240, 0.7);
+    font-size: 0.82rem;
+  }
+
+  .admin-profile-card,
+  .admin-service-assignment {
+    border-radius: 1.15rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.035);
+    padding: 1rem;
+  }
+
+  .admin-profile-card {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+      rgba(255, 255, 255, 0.025);
+  }
+
+  .admin-profile-edit-grid {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 0.65fr) minmax(0, 1.35fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .admin-profile-media {
+    min-width: 0;
+  }
+
+  .admin-profile-fields {
+    display: grid;
+    gap: 0.85rem;
+    min-width: 0;
+  }
+
+  .admin-profile-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(11, 11, 15, 0.72);
+    object-fit: cover;
+  }
+
+  .admin-service-preview {
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    background:
+      radial-gradient(42rem 18rem at 94% -20%, rgba(212, 175, 55, 0.12), transparent),
+      rgba(255, 255, 255, 0.035);
+    padding: 1rem;
+  }
+
+  :global(.admin-assigned-chip) {
+    display: flex;
+    width: fit-content;
+    max-width: min(100%, 24rem);
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    background:
+      linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(255, 255, 255, 0.035)),
+      rgba(255, 255, 255, 0.035);
+    padding: 0.5rem 0.72rem;
+    color: rgba(247, 245, 240, 0.82);
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  :global(.admin-assigned-dot) {
+    width: 0.42rem;
+    height: 0.42rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--color-gold-300);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+  }
+
+  [data-assigned-preview] {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .admin-assign-menu {
+    position: relative;
+  }
+
+  .admin-assign-menu summary {
+    display: inline-flex;
+    width: fit-content;
+    cursor: pointer;
+    list-style: none;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 175, 55, 0.42);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 0.65rem 0.9rem;
+    color: var(--color-gold-200);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .admin-assign-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .admin-assign-menu summary::after {
+    content: '+';
+    color: var(--color-gold-300);
+    font-size: 1rem;
+    line-height: 0.8;
+  }
+
+  .admin-assign-menu[open] summary {
+    border-color: color-mix(in srgb, var(--color-gold-400) 62%, transparent);
+    background: rgba(212, 175, 55, 0.16);
+  }
+
+  .admin-assign-options {
+    position: absolute;
+    left: 0;
+    z-index: 20;
+    width: min(100vw - 2rem, 22rem);
+    margin-top: 0.65rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+      rgba(17, 17, 24, 0.98);
+    box-shadow: 0 22px 70px -36px rgba(0, 0, 0, 0.95);
+    padding: 0.4rem;
+  }
+
+  :global(.admin-assign-option) {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    width: 100%;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.78rem;
+    padding: 0.78rem 0.82rem;
+    color: rgba(247, 245, 240, 0.78);
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.25;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  :global(.admin-assign-option:hover),
+  :global(.admin-assign-option:has(input:checked)) {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--color-cream);
+  }
+
+  :global(.admin-assign-option input) {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-gold-400);
+  }
+
+  :global(.admin-assign-option span) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .admin-dashboard {
     display: grid;
     gap: 1rem;
@@ -806,6 +1108,10 @@ const languages = ['ES', 'EN', 'PT'];
 
   @media (max-width: 560px) {
     .admin-dashboard {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-profile-edit-grid {
       grid-template-columns: 1fr;
     }
   }

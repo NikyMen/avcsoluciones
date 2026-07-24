@@ -1,0 +1,544 @@
+---
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import Icon from './Icon.astro';
+import { getContent, social, type Lang } from '../i18n/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getContent(lang);
+
+const copy = {
+  es: {
+    pageLabel: 'Equipo',
+    eyebrow: 'Equipo profesional',
+    title: 'Personas expertas para cada etapa de tu empresa',
+    lead:
+      'Conoce a los profesionales que sostienen nuestras soluciones contables, tributarias, financieras y empresariales.',
+    contact: 'Contactenos',
+    directoryTitle: 'Nuestro equipo',
+    directoryLead: 'Selecciona un perfil para ver su trayectoria y areas de especializacion.',
+    viewProfile: 'Ver perfil',
+    loading: 'Cargando perfiles del equipo...',
+    empty: 'Todavia no hay integrantes cargados.',
+    quote: 'Acompanamos cada decision con criterio tecnico, cercania y foco en resultados.',
+    quoteBy: 'AVC Soluciones Empresariales',
+    profileFallback: 'Perfil profesional',
+  },
+  en: {
+    pageLabel: 'Team',
+    eyebrow: 'Professional team',
+    title: 'Experts for every stage of your company',
+    lead:
+      'Meet the professionals behind our accounting, tax, financial and business advisory solutions.',
+    contact: 'Contact us',
+    directoryTitle: 'Our team',
+    directoryLead: 'Select a profile to view background and areas of expertise.',
+    viewProfile: 'View profile',
+    loading: 'Loading team profiles...',
+    empty: 'No team members have been added yet.',
+    quote: 'We support every decision with technical judgment, closeness and a focus on results.',
+    quoteBy: 'AVC Soluciones Empresariales',
+    profileFallback: 'Professional profile',
+  },
+  pt: {
+    pageLabel: 'Equipe',
+    eyebrow: 'Equipe profissional',
+    title: 'Especialistas para cada etapa da sua empresa',
+    lead:
+      'Conheca os profissionais por tras das nossas solucoes contabeis, tributarias, financeiras e empresariais.',
+    contact: 'Fale conosco',
+    directoryTitle: 'Nossa equipe',
+    directoryLead: 'Selecione um perfil para ver sua trajetoria e areas de especializacao.',
+    viewProfile: 'Ver perfil',
+    loading: 'Carregando perfis da equipe...',
+    empty: 'Ainda nao ha integrantes cadastrados.',
+    quote: 'Acompanhamos cada decisao com criterio tecnico, proximidade e foco em resultados.',
+    quoteBy: 'AVC Soluciones Empresariales',
+    profileFallback: 'Perfil profissional',
+  },
+}[lang];
+---
+
+<Header lang={lang} />
+
+<main class="team-page bg-cream" data-team-page>
+  <section class="team-hero bg-ink-950 text-cream">
+    <div class="team-hero-glow" aria-hidden="true"></div>
+    <div class="container-x team-hero-inner">
+      <div class="team-hero-copy reveal">
+        <span class="eyebrow !text-gold-300">
+          <Icon name="users" class="w-4 h-4" />{copy.eyebrow}
+        </span>
+        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl leading-[1.04]" data-team-hero-name>
+          {copy.title}
+        </h1>
+        <p class="mt-4 text-lg text-cream/72 leading-relaxed" data-team-hero-role>
+          {copy.lead}
+        </p>
+        <p class="mt-3 max-w-2xl text-sm text-gold-300/86 font-semibold" data-team-hero-specialty></p>
+        <a href={social.whatsapp} target="_blank" rel="noopener" class="btn btn-gold mt-8">
+          <Icon name="whatsapp" class="w-5 h-5" />{copy.contact}
+        </a>
+      </div>
+
+      <div class="team-hero-media reveal" data-team-hero-media hidden>
+        <img src="/images/logo-icon.png" alt="" data-team-hero-image />
+      </div>
+    </div>
+  </section>
+
+  <section class="team-directory">
+    <div class="container-x">
+      <div class="team-directory-heading reveal">
+        <div>
+          <span class="eyebrow">{copy.pageLabel}</span>
+          <h2 class="mt-3 text-3xl sm:text-4xl">{copy.directoryTitle}</h2>
+        </div>
+        <p>{copy.directoryLead}</p>
+      </div>
+
+      <p class="team-status reveal" data-team-status>{copy.loading}</p>
+      <div class="team-grid" data-team-grid></div>
+
+      <article class="team-detail" id="perfil" data-team-detail hidden>
+        <div class="team-detail-copy">
+          <p class="text-xs font-semibold uppercase tracking-wider text-gold-600" data-team-detail-specialty></p>
+          <h2 class="mt-3 text-3xl sm:text-4xl" data-team-detail-name></h2>
+          <p class="mt-2 text-lg font-semibold text-ink-700" data-team-detail-role></p>
+          <div class="team-detail-description" data-team-detail-description></div>
+        </div>
+
+        <aside class="team-quote">
+          <div class="team-quote-mark" aria-hidden="true">"</div>
+          <p>{copy.quote}</p>
+          <span data-team-quote-by>{copy.quoteBy}</span>
+        </aside>
+      </article>
+    </div>
+  </section>
+</main>
+
+<Footer lang={lang} />
+
+<script define:vars={{ copy }}>
+  let teamProfiles = [];
+  let activeProfileId = '';
+
+  const statusNode = document.querySelector('[data-team-status]');
+  const gridNode = document.querySelector('[data-team-grid]');
+  const detailNode = document.querySelector('[data-team-detail]');
+  const teamPage = document.querySelector('[data-team-page]');
+  const heroMedia = document.querySelector('[data-team-hero-media]');
+  const heroName = document.querySelector('[data-team-hero-name]');
+  const heroRole = document.querySelector('[data-team-hero-role]');
+  const heroSpecialty = document.querySelector('[data-team-hero-specialty]');
+  const heroImage = document.querySelector('[data-team-hero-image]');
+  const detailName = document.querySelector('[data-team-detail-name]');
+  const detailRole = document.querySelector('[data-team-detail-role]');
+  const detailSpecialty = document.querySelector('[data-team-detail-specialty]');
+  const detailDescription = document.querySelector('[data-team-detail-description]');
+  const quoteBy = document.querySelector('[data-team-quote-by]');
+
+  const escapeHtml = (value) =>
+    String(value || '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+  const getProfileHref = (profileId) => `${window.location.pathname}?perfil=${encodeURIComponent(profileId)}`;
+
+  const splitDescription = (description) => {
+    const text = String(description || '').trim();
+    if (!text) return [];
+    const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+    const paragraphs = [];
+    for (let index = 0; index < sentences.length; index += 2) {
+      paragraphs.push(sentences.slice(index, index + 2).join(' ').trim());
+    }
+    return paragraphs;
+  };
+
+  const getSelectedProfile = () => {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('perfil') || window.location.hash.replace('#', '');
+    if (!requested) return null;
+    return teamProfiles.find((profile) => profile.id === requested) || null;
+  };
+
+  const renderGrid = () => {
+    if (!gridNode) return;
+    gridNode.innerHTML = teamProfiles
+      .map((profile) => {
+        const role = profile.specialty || profile.role || copy.profileFallback;
+        const isActive = profile.id === activeProfileId;
+        return `
+          <article class="team-card ${isActive ? 'is-active' : ''}" data-team-card data-profile-id="${escapeHtml(profile.id)}">
+            <a href="${getProfileHref(profile.id)}" class="team-card-image-link" aria-label="${escapeHtml(copy.viewProfile)}: ${escapeHtml(profile.name)}">
+              <img src="${escapeHtml(profile.imageUrl || '/images/logo-icon.png')}" alt="${escapeHtml(profile.name)}" />
+            </a>
+            <div class="team-card-body">
+              <h3>${escapeHtml(profile.name)}</h3>
+              <p>${escapeHtml(role)}</p>
+              <a href="${getProfileHref(profile.id)}" class="team-profile-link" data-profile-link>
+                ${escapeHtml(copy.viewProfile)}
+              </a>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+  };
+
+  const renderProfile = (profile) => {
+    activeProfileId = profile?.id || '';
+    renderGrid();
+    if (!profile) return;
+
+    teamPage?.classList.remove('is-neutral');
+    if (heroMedia) heroMedia.hidden = false;
+    const role = profile.role || copy.profileFallback;
+    const specialty = profile.specialty || role;
+    heroName.textContent = profile.name || copy.directoryTitle;
+    heroRole.textContent = role;
+    heroSpecialty.textContent = specialty;
+    heroImage.src = profile.imageUrl || '/images/logo-icon.png';
+    heroImage.alt = profile.name || '';
+
+    detailName.textContent = profile.name || '';
+    detailRole.textContent = role;
+    detailSpecialty.textContent = specialty;
+    quoteBy.textContent = `${profile.name || copy.quoteBy} - ${specialty}`;
+    detailDescription.innerHTML = splitDescription(profile.description)
+      .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+      .join('');
+    detailNode.hidden = false;
+  };
+
+  const renderNeutralTeam = () => {
+    activeProfileId = '';
+    teamPage?.classList.add('is-neutral');
+    heroName.textContent = copy.title;
+    heroRole.textContent = copy.lead;
+    heroSpecialty.textContent = '';
+    if (heroMedia) heroMedia.hidden = true;
+    if (detailNode) detailNode.hidden = true;
+    renderGrid();
+  };
+
+  const setActiveProfile = (profileId, shouldScroll = true) => {
+    const profile = teamProfiles.find((item) => item.id === profileId) || teamProfiles[0] || null;
+    if (!profile) return;
+    history.replaceState(null, '', getProfileHref(profile.id));
+    renderProfile(profile);
+    if (shouldScroll) detailNode?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const loadTeam = async () => {
+    try {
+      const response = await fetch('/api/team-profiles');
+      if (!response.ok) throw new Error('No team profiles');
+      const payload = await response.json();
+      teamProfiles = Array.isArray(payload.profiles) ? payload.profiles : [];
+    } catch {
+      teamProfiles = [];
+    }
+
+    if (!teamProfiles.length) {
+      if (statusNode) statusNode.textContent = copy.empty;
+      return;
+    }
+
+    if (statusNode) statusNode.hidden = true;
+    const selectedProfile = getSelectedProfile();
+    if (selectedProfile) {
+      renderProfile(selectedProfile);
+    } else {
+      renderNeutralTeam();
+    }
+  };
+
+  gridNode?.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link) return;
+    const card = link.closest('[data-team-card]');
+    const profileId = card?.getAttribute('data-profile-id');
+    if (!profileId) return;
+    event.preventDefault();
+    setActiveProfile(profileId);
+  });
+
+  window.addEventListener('popstate', () => {
+    const selectedProfile = getSelectedProfile();
+    if (selectedProfile) renderProfile(selectedProfile);
+    else renderNeutralTeam();
+  });
+  loadTeam();
+</script>
+
+<style>
+  .team-page {
+    min-height: 100vh;
+  }
+
+  .team-hero {
+    position: relative;
+    overflow: hidden;
+    padding-top: 6.5rem;
+  }
+
+  .team-hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(46rem 34rem at 78% 12%, rgba(212, 175, 55, 0.16), transparent),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 54%);
+    pointer-events: none;
+  }
+
+  .team-hero-inner {
+    position: relative;
+    display: grid;
+    min-height: 28rem;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    gap: clamp(2rem, 6vw, 7rem);
+    align-items: center;
+    padding-block: clamp(3rem, 7vw, 5.4rem);
+  }
+
+  .team-hero-copy {
+    max-width: 42rem;
+  }
+
+  .team-page.is-neutral .team-hero-inner {
+    grid-template-columns: minmax(0, 44rem);
+  }
+
+  .team-page.is-neutral .team-hero-copy {
+    max-width: 44rem;
+  }
+
+  .team-hero-media {
+    overflow: hidden;
+    border-radius: 0.75rem;
+    aspect-ratio: 7 / 6;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 28px 70px -36px rgba(0, 0, 0, 0.95);
+  }
+
+  .team-hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .team-directory {
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .team-directory-heading {
+    display: flex;
+    gap: 2rem;
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .team-directory-heading p {
+    max-width: 31rem;
+    color: var(--color-ink-600);
+    line-height: 1.7;
+  }
+
+  .team-status {
+    margin-top: 2rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(11, 11, 15, 0.08);
+    background: white;
+    padding: 1rem;
+    color: var(--color-ink-600);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  :global(.team-card) {
+    overflow: hidden;
+    border-radius: 0.6rem;
+    border: 1px solid rgba(11, 11, 15, 0.08);
+    background: white;
+    box-shadow: 0 14px 34px -26px rgba(11, 11, 15, 0.48);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  :global(.team-card:hover),
+  :global(.team-card.is-active) {
+    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.42);
+    box-shadow: 0 22px 48px -28px rgba(11, 11, 15, 0.55);
+  }
+
+  :global(.team-card-image-link) {
+    display: block;
+    aspect-ratio: 1.45 / 1;
+    overflow: hidden;
+    background: var(--color-ink-900);
+  }
+
+  :global(.team-card img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :global(.team-card:hover img) {
+    transform: scale(1.035);
+  }
+
+  :global(.team-card-body) {
+    display: grid;
+    min-height: 10.5rem;
+    align-content: start;
+    padding: 1rem;
+  }
+
+  :global(.team-card h3) {
+    color: var(--color-ink-900);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.15;
+  }
+
+  :global(.team-card p) {
+    margin-top: 0.45rem;
+    color: var(--color-ink-700);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  :global(.team-profile-link) {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    border-radius: 999px;
+    background: var(--color-ink-800);
+    padding: 0.52rem 1.05rem;
+    color: var(--color-cream);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  :global(.team-profile-link:hover),
+  :global(.team-card.is-active .team-profile-link) {
+    background: var(--color-gold-400);
+    color: var(--color-ink-950);
+  }
+
+  .team-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.65fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+    margin-top: clamp(3rem, 7vw, 5rem);
+    scroll-margin-top: 7rem;
+  }
+
+  .team-detail[hidden] {
+    display: none;
+  }
+
+  .team-detail-description {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 2rem;
+    color: var(--color-ink-800);
+    font-size: 1.03rem;
+    line-height: 1.85;
+  }
+
+  .team-quote {
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--color-gold-100) 44%, #d7f5f2);
+    padding: clamp(1.35rem, 3vw, 2rem);
+  }
+
+  .team-quote-mark {
+    color: #1cb7aa;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    line-height: 0.8;
+  }
+
+  .team-quote p {
+    color: var(--color-ink-900);
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    line-height: 1.22;
+  }
+
+  .team-quote span {
+    display: block;
+    margin-top: 1.5rem;
+    color: var(--color-ink-600);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 980px) {
+    .team-hero-inner,
+    .team-detail {
+      grid-template-columns: 1fr;
+    }
+
+    .team-hero-media {
+      width: min(100%, 26rem);
+    }
+
+    .team-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .team-hero {
+      padding-top: 5.6rem;
+    }
+
+    .team-hero-inner {
+      min-height: auto;
+      padding-block: 2.5rem 3rem;
+    }
+
+    .team-directory-heading {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.team-card-body) {
+      min-height: 9rem;
+    }
+  }
+</style>

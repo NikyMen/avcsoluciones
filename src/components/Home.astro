@@ -8,6 +8,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = getContent(lang);
 const wa = social.whatsapp;
+const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/equipe';
 ---
 <Header lang={lang} />
 
@@ -258,35 +259,6 @@ const wa = social.whatsapp;
     </div>
   </section>
 
-  <!-- ============ EQUIPO ============ -->
-  <section id="equipo" class="py-24 bg-cream">
-    <div class="container-x">
-      <div class="max-w-2xl reveal">
-        <span class="eyebrow">{t.team.eyebrow}</span>
-        <h2 class="mt-4 text-3xl sm:text-4xl">{t.team.title}</h2>
-        <p class="mt-4 text-ink-600">{t.team.lead}</p>
-      </div>
-
-      <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {t.team.members.map((m) => (
-          <article class="reveal rounded-2xl bg-white shadow-soft border border-ink-700/5 overflow-hidden">
-            <div class="h-44 bg-gradient-to-br from-ink-900 to-ink-700 grid place-items-center">
-              <div class="grid place-items-center h-20 w-20 rounded-full bg-gold-400/20 text-gold-300 border border-gold-400/30">
-                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-              </div>
-            </div>
-            <div class="p-6">
-              <h3 class="font-display text-lg">{m.name}</h3>
-              <p class="text-sm text-gold-600 font-medium">{m.role}</p>
-              <p class="mt-2.5 text-sm text-ink-600 leading-relaxed">{m.bio}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-      <p class="mt-6 text-sm text-ink-500 italic reveal">{t.team.note}</p>
-    </div>
-  </section>
-
   <!-- ============ ACUERDOS (carrusel) ============ -->
   <section id="acuerdos" class="py-24 bg-ink-950 text-cream overflow-hidden">
     <div class="container-x">
@@ -384,8 +356,9 @@ const wa = social.whatsapp;
 
 <Footer lang={lang} />
 
-<script>
+<script define:vars={{ teamPath }}>
   const phone = '595991437021';
+  const teamPagePath = teamPath;
 
   const form = document.querySelector('[data-contact-form]');
   if (form) {
@@ -434,17 +407,11 @@ const wa = social.whatsapp;
   let activeServiceId = '';
 
   const renderTeamProfileCard = (profile) => {
+    const profileUrl = `${teamPagePath}?perfil=${encodeURIComponent(profile.id)}`;
     return `
-      <article class="service-team-profile" tabindex="0">
+      <a class="service-team-profile" href="${profileUrl}" aria-label="Ver perfil de ${escapeProfileHtml(profile.name)}" title="${escapeProfileHtml(profile.name)}">
         <img src="${escapeProfileHtml(profile.imageUrl || '/images/logo-icon.png')}" alt="${escapeProfileHtml(profile.name)}" />
-        <div class="service-team-profile-base">
-          <p class="service-team-name">${escapeProfileHtml(profile.name)}</p>
-          <p class="service-team-role">${escapeProfileHtml(profile.specialty || profile.role || 'Perfil profesional')}</p>
-        </div>
-        <div class="service-team-description">
-          <p>${escapeProfileHtml(profile.description || '')}</p>
-        </div>
-      </article>
+      </a>
     `;
   };
 
@@ -539,7 +506,8 @@ const wa = social.whatsapp;
     z-index: 80;
     display: grid;
     place-items: center;
-    padding: 1.25rem;
+    overflow-x: hidden;
+    padding: clamp(0.75rem, 4vw, 1.25rem);
     pointer-events: none;
     opacity: 0;
     transition:
@@ -563,7 +531,8 @@ const wa = social.whatsapp;
 
   .service-modal-card {
     position: relative;
-    width: min(100%, 46rem);
+    box-sizing: border-box;
+    width: min(46rem, calc(100vw - 2rem));
     max-height: min(88vh, 45rem);
     overflow: auto;
     border: 1px solid color-mix(in srgb, var(--color-gold-400) 42%, transparent);
@@ -616,6 +585,7 @@ const wa = social.whatsapp;
   .service-team-heading {
     display: flex;
     width: 100%;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.65rem;
   }
@@ -656,6 +626,7 @@ const wa = social.whatsapp;
 
   :global(.service-team-profile) {
     position: relative;
+    display: block;
     min-height: 18rem;
     overflow: hidden;
     border-radius: 1.1rem;
@@ -710,62 +681,10 @@ const wa = social.whatsapp;
     z-index: 1;
     content: '';
     background:
-      linear-gradient(180deg, rgba(11, 11, 15, 0.06) 0%, rgba(11, 11, 15, 0.2) 40%, rgba(11, 11, 15, 0.86) 100%),
+      linear-gradient(180deg, rgba(11, 11, 15, 0) 0%, rgba(11, 11, 15, 0.08) 58%, rgba(11, 11, 15, 0.32) 100%),
       radial-gradient(70% 55% at 50% 16%, transparent, rgba(11, 11, 15, 0.28));
     pointer-events: none;
     transition: opacity 0.28s ease;
-  }
-
-  :global(.service-team-profile-base) {
-    position: absolute;
-    inset: auto 0 0;
-    z-index: 2;
-    padding: 1rem;
-    transform: translateY(0);
-    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  :global(.service-team-name) {
-    color: var(--color-cream);
-    font-family: var(--font-display);
-    font-size: 1.18rem;
-    line-height: 1.15;
-    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.7);
-  }
-
-  :global(.service-team-role) {
-    margin-top: 0.25rem;
-    color: var(--color-gold-300);
-    font-size: 0.76rem;
-    font-weight: 700;
-    line-height: 1.35;
-  }
-
-  :global(.service-team-description) {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    display: flex;
-    align-items: flex-end;
-    padding: 1rem;
-    background:
-      linear-gradient(180deg, rgba(11, 11, 15, 0.18), rgba(11, 11, 15, 0.88)),
-      rgba(11, 11, 15, 0.24);
-    opacity: 0;
-    backdrop-filter: blur(0);
-    transform: translateY(0.8rem);
-    transition:
-      opacity 0.3s ease,
-      transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-      backdrop-filter 0.3s ease;
-  }
-
-  :global(.service-team-description p) {
-    max-height: 78%;
-    overflow-y: auto;
-    color: rgba(247, 245, 240, 0.86);
-    font-size: 0.84rem;
-    line-height: 1.58;
   }
 
   :global(.service-team-profile:hover),
@@ -777,20 +696,8 @@ const wa = social.whatsapp;
 
   :global(.service-team-profile:hover img),
   :global(.service-team-profile:focus-visible img) {
-    filter: saturate(0.9) brightness(0.72);
+    filter: saturate(1.02) brightness(0.9);
     transform: scale(1.025);
-  }
-
-  :global(.service-team-profile:hover .service-team-profile-base),
-  :global(.service-team-profile:focus-visible .service-team-profile-base) {
-    transform: translateY(-0.55rem);
-  }
-
-  :global(.service-team-profile:hover .service-team-description),
-  :global(.service-team-profile:focus-visible .service-team-description) {
-    opacity: 1;
-    backdrop-filter: blur(6px);
-    transform: translateY(0);
   }
 
   :global(body.service-modal-open) {
@@ -806,14 +713,41 @@ const wa = social.whatsapp;
   }
 
   @media (max-width: 640px) {
+    .service-modal {
+      align-items: start;
+      padding: 0.75rem;
+      overflow-y: auto;
+    }
+
     .service-modal-card {
-      width: min(100%, 28rem);
+      width: 100%;
+      max-width: calc(100vw - 1.5rem);
+      max-height: calc(100dvh - 1.5rem);
+      border-radius: 1.15rem;
       padding: 1.25rem;
     }
 
     .service-modal-content {
       padding-right: 0;
       padding-top: 1.25rem;
+    }
+
+    .service-modal-close {
+      right: 0.75rem;
+      top: 0.75rem;
+    }
+
+    #service-modal-title {
+      padding-right: 2.25rem;
+      font-size: clamp(1.55rem, 7vw, 1.9rem);
+    }
+
+    .service-team-heading {
+      align-items: flex-start;
+    }
+
+    .service-team-count {
+      margin-left: 0;
     }
 
     .service-team-grid {

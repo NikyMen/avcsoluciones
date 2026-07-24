@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TeamPage from '../../components/TeamPage.astro';
+import { getContent } from '../../i18n/content';
+
+const t = getContent('en');
+---
+
+<Layout
+  lang="en"
+  htmlLang={t.htmlLang}
+  title="Team | AVC Soluciones Empresariales"
+  description="Meet AVC Soluciones Empresariales' professional team and their areas of expertise."
+>
+  <TeamPage lang="en" />
+</Layout>

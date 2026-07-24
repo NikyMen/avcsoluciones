@@ -16,7 +16,7 @@ export function localizedPath(lang: Lang, path = ''): string {
 export interface Content {
   lang: Lang;
   htmlLang: string;
-  nav: { inicio: string; nosotros: string; servicios: string; sectores: string; inversionistas: string; acuerdos: string; contacto: string };
+  nav: { inicio: string; nosotros: string; equipo: string; servicios: string; sectores: string; inversionistas: string; acuerdos: string; contacto: string };
   cta: { services: string; contact: string };
   hero: {
     badge: string;
@@ -119,7 +119,7 @@ const contact = {
 const es: Content = {
   lang: 'es',
   htmlLang: 'es',
-  nav: { inicio: 'Inicio', nosotros: 'Nosotros', servicios: 'Servicios', sectores: 'Sectores', inversionistas: 'Inversionistas', acuerdos: 'Acuerdos', contacto: 'Contacto' },
+  nav: { inicio: 'Inicio', nosotros: 'Nosotros', equipo: 'Equipo', servicios: 'Servicios', sectores: 'Sectores', inversionistas: 'Inversionistas', acuerdos: 'Acuerdos', contacto: 'Contacto' },
   cta: { services: 'Servicios', contact: 'Contacto' },
   hero: {
     badge: 'Consultoría empresarial integral · Paraguay',
@@ -255,7 +255,7 @@ const es: Content = {
 const en: Content = {
   lang: 'en',
   htmlLang: 'en',
-  nav: { inicio: 'Home', nosotros: 'About', servicios: 'Services', sectores: 'Sectors', inversionistas: 'Investors', acuerdos: 'Partners', contacto: 'Contact' },
+  nav: { inicio: 'Home', nosotros: 'About', equipo: 'Team', servicios: 'Services', sectores: 'Sectors', inversionistas: 'Investors', acuerdos: 'Partners', contacto: 'Contact' },
   cta: { services: 'Services', contact: 'Contact' },
   hero: {
     badge: 'Integral business consulting · Paraguay',
@@ -391,7 +391,7 @@ const en: Content = {
 const pt: Content = {
   lang: 'pt',
   htmlLang: 'pt-BR',
-  nav: { inicio: 'Início', nosotros: 'Sobre', servicios: 'Serviços', sectores: 'Setores', inversionistas: 'Investidores', acuerdos: 'Parcerias', contacto: 'Contato' },
+  nav: { inicio: 'Início', nosotros: 'Sobre', equipo: 'Equipe', servicios: 'Serviços', sectores: 'Setores', inversionistas: 'Investidores', acuerdos: 'Parcerias', contacto: 'Contato' },
   cta: { services: 'Serviços', contact: 'Contato' },
   hero: {
     badge: 'Consultoria empresarial integral · Paraguai',

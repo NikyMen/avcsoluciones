@@ -6,10 +6,12 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = getContent(lang);
 const base = lang === 'es' ? '' : `/${lang}`;
+const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/equipe';
 const year = new Date().getFullYear();
 
 const explore = [
   { href: `${base}/#nosotros`, label: t.nav.nosotros },
+  { href: teamPath, label: t.nav.equipo },
   { href: `${base}/#servicios`, label: t.nav.servicios },
   { href: `${base}/#sectores`, label: t.nav.sectores },
   { href: `${base}/#inversionistas`, label: t.nav.inversionistas },

@@ -26,14 +26,25 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   body {
     font-family: var(--font-sans);
     color: var(--color-ink-900);
     background: var(--color-cream);
+    overflow-x: hidden;
+  }
+  main {
+    overflow-x: clip;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
@@ -53,7 +64,7 @@
 @layer components {
 .container-x {
   width: 100%;
-  max-width: 1200px;
+  max-width: min(1200px, 100%);
   margin-inline: auto;
   padding-inline: 1.5rem;
 }
@@ -134,4 +145,15 @@
   .reveal { opacity: 1; transform: none; transition: none; }
   .marquee-track { animation: none; }
   html { scroll-behavior: auto; }
+}
+
+@media (max-width: 640px) {
+  .container-x {
+    padding-inline: 1.25rem;
+  }
+
+  .btn {
+    max-width: 100%;
+    white-space: normal;
+  }
 }

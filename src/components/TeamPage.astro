@@ -90,18 +90,7 @@ const copy = {
 
   <section class="team-directory">
     <div class="container-x">
-      <div class="team-directory-heading reveal">
-        <div>
-          <span class="eyebrow">{copy.pageLabel}</span>
-          <h2 class="mt-3 text-3xl sm:text-4xl">{copy.directoryTitle}</h2>
-        </div>
-        <p>{copy.directoryLead}</p>
-      </div>
-
-      <p class="team-status reveal" data-team-status>{copy.loading}</p>
-      <div class="team-grid" data-team-grid></div>
-
-      <article class="team-detail" id="perfil" data-team-detail hidden>
+      <article class="team-detail reveal" id="perfil" data-team-detail hidden>
         <div class="team-detail-copy">
           <p class="text-xs font-semibold uppercase tracking-wider text-gold-600" data-team-detail-specialty></p>
           <h2 class="mt-3 text-3xl sm:text-4xl" data-team-detail-name></h2>
@@ -115,6 +104,18 @@ const copy = {
           <span data-team-quote-by>{copy.quoteBy}</span>
         </aside>
       </article>
+
+      <div class="team-directory-heading reveal">
+        <div>
+          <span class="eyebrow">{copy.pageLabel}</span>
+          <h2 class="mt-3 text-3xl sm:text-4xl">{copy.directoryTitle}</h2>
+          <p>{copy.directoryLead}</p>
+        </div>
+      </div>
+
+      <p class="team-status reveal" data-team-status>{copy.loading}</p>
+
+      <div class="team-grid" data-team-grid></div>
     </div>
   </section>
 </main>
@@ -124,6 +125,8 @@ const copy = {
 <script define:vars={{ copy }}>
   let teamProfiles = [];
   let activeProfileId = '';
+  let descriptionTypingToken = 0;
+  let profileFlightToken = 0;
 
   const statusNode = document.querySelector('[data-team-status]');
   const gridNode = document.querySelector('[data-team-grid]');
@@ -139,6 +142,8 @@ const copy = {
   const detailSpecialty = document.querySelector('[data-team-detail-specialty]');
   const detailDescription = document.querySelector('[data-team-detail-description]');
   const quoteBy = document.querySelector('[data-team-quote-by]');
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const escapeHtml = (value) =>
     String(value || '')
@@ -168,6 +173,21 @@ const copy = {
     return teamProfiles.find((profile) => profile.id === requested) || null;
   };
 
+  const handleProfileLinkClick = (event) => {
+    const clickedElement = event.currentTarget instanceof Element
+      ? event.currentTarget
+      : event.target instanceof Element
+        ? event.target
+        : event.target?.parentElement;
+    const link = clickedElement?.closest('a[href]');
+    if (!link) return;
+    const card = link.closest('[data-team-card]');
+    const profileId = card?.getAttribute('data-profile-id');
+    if (!profileId) return;
+    event.preventDefault();
+    setActiveProfile(profileId, true, card.querySelector('img'), card);
+  };
+
   const renderGrid = () => {
     if (!gridNode) return;
     gridNode.innerHTML = teamProfiles
@@ -190,9 +210,62 @@ const copy = {
         `;
       })
       .join('');
+
+    gridNode.querySelectorAll('[data-team-card] a[href]').forEach((link) => {
+      link.addEventListener('click', handleProfileLinkClick);
+    });
   };
 
-  const renderProfile = (profile) => {
+  const renderDescription = (description) => {
+    descriptionTypingToken += 1;
+    detailDescription.classList.remove('is-typing');
+    detailDescription.innerHTML = splitDescription(description)
+      .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+      .join('');
+  };
+
+  const typeDescription = (description) => {
+    const paragraphs = splitDescription(description);
+    const typingToken = ++descriptionTypingToken;
+    detailDescription.innerHTML = '';
+    detailDescription.classList.add('is-typing');
+
+    if (!paragraphs.length || prefersReducedMotion.matches) {
+      renderDescription(description);
+      return;
+    }
+
+    const paragraphNodes = paragraphs.map(() => {
+      const node = document.createElement('p');
+      detailDescription.appendChild(node);
+      return node;
+    });
+    const fullText = paragraphs.join('\n');
+    const duration = Math.min(5200, Math.max(2200, fullText.length * 11));
+    const startedAt = performance.now();
+
+    const typeFrame = (now) => {
+      if (typingToken !== descriptionTypingToken) return;
+      const progress = Math.min(1, (now - startedAt) / duration);
+      let remainingCharacters = Math.floor(fullText.length * progress);
+
+      paragraphs.forEach((paragraph, index) => {
+        const visibleCharacters = Math.min(paragraph.length, Math.max(0, remainingCharacters));
+        paragraphNodes[index].textContent = paragraph.slice(0, visibleCharacters);
+        remainingCharacters -= paragraph.length + 1;
+      });
+
+      if (progress < 1) {
+        requestAnimationFrame(typeFrame);
+      } else {
+        detailDescription.classList.remove('is-typing');
+      }
+    };
+
+    requestAnimationFrame(typeFrame);
+  };
+
+  const renderProfile = (profile, { deferDescription = false } = {}) => {
     activeProfileId = profile?.id || '';
     renderGrid();
     if (!profile) return;
@@ -211,29 +284,178 @@ const copy = {
     detailRole.textContent = role;
     detailSpecialty.textContent = specialty;
     quoteBy.textContent = `${profile.name || copy.quoteBy} - ${specialty}`;
-    detailDescription.innerHTML = splitDescription(profile.description)
+    descriptionTypingToken += 1;
+    detailDescription.classList.remove('is-typing');
+    detailDescription.innerHTML = deferDescription ? '' : splitDescription(profile.description)
       .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
       .join('');
     detailNode.hidden = false;
+    requestAnimationFrame(() => detailNode.classList.add('is-visible', 'is-settled'));
   };
 
   const renderNeutralTeam = () => {
+    descriptionTypingToken += 1;
+    profileFlightToken += 1;
     activeProfileId = '';
     teamPage?.classList.add('is-neutral');
     heroName.textContent = copy.title;
     heroRole.textContent = copy.lead;
     heroSpecialty.textContent = '';
     if (heroMedia) heroMedia.hidden = true;
-    if (detailNode) detailNode.hidden = true;
+    if (detailNode) {
+      detailNode.classList.remove('is-visible', 'is-settled');
+      detailNode.hidden = true;
+    }
     renderGrid();
   };
 
-  const setActiveProfile = (profileId, shouldScroll = true) => {
+  const animateProfileImageToHero = (sourceRect, sourceSrc, finalScrollTop = window.scrollY) => {
+    if (!sourceRect || !sourceSrc || !heroMedia || !heroImage || prefersReducedMotion.matches) {
+      return Promise.resolve(false);
+    }
+
+    const flightToken = ++profileFlightToken;
+    const startScrollTop = window.scrollY;
+    const targetScrollTop = Math.max(0, finalScrollTop);
+    const targetRect = heroMedia.getBoundingClientRect();
+    if (!targetRect.width || !targetRect.height) return Promise.resolve(false);
+
+    const targetDocumentTop = targetRect.top + startScrollTop;
+    const targetViewportTop = targetDocumentTop - targetScrollTop;
+    const isCompactViewport = window.matchMedia('(max-width: 640px)').matches;
+    const duration = isCompactViewport ? 1500 : 1900;
+
+    const ghost = document.createElement('div');
+    ghost.className = 'team-profile-flight';
+    ghost.setAttribute('aria-hidden', 'true');
+    const cloth = document.createElement('div');
+    cloth.className = 'team-profile-cloth';
+    const clothStrips = Array.from({ length: 9 }, (_, index) => {
+      const strip = document.createElement('span');
+      strip.className = 'team-profile-cloth-strip';
+      strip.style.setProperty('--strip-index', index);
+      const stripImage = document.createElement('img');
+      stripImage.src = sourceSrc;
+      stripImage.alt = '';
+      stripImage.style.left = `${index * -100}%`;
+      strip.appendChild(stripImage);
+      cloth.appendChild(strip);
+      return strip;
+    });
+    ghost.appendChild(cloth);
+    Object.assign(ghost.style, {
+      left: `${sourceRect.left}px`,
+      top: `${sourceRect.top}px`,
+      width: `${sourceRect.width}px`,
+      height: `${sourceRect.height}px`,
+    });
+
+    document.querySelectorAll('.team-profile-flight').forEach((node) => node.remove());
+    document.body.appendChild(ghost);
+    heroMedia.classList.add('is-receiving-profile');
+    const rootStyle = document.documentElement.style;
+    const previousScrollBehavior = rootStyle.scrollBehavior;
+    rootStyle.scrollBehavior = 'auto';
+    const startedAt = performance.now();
+    const easeInOut = (value) => value < 0.5
+      ? 4 * value * value * value
+      : 1 - Math.pow(-2 * value + 2, 3) / 2;
+    const easeOut = (value) => 1 - Math.pow(1 - value, 3);
+    const interpolate = (start, end, progress) => start + (end - start) * progress;
+
+    return new Promise((resolve) => {
+      const finishFlight = (completed) => {
+        rootStyle.scrollBehavior = previousScrollBehavior;
+        ghost.remove();
+        heroMedia.classList.remove('is-receiving-profile');
+        if (completed) {
+          heroMedia.classList.add('is-profile-settled');
+          window.setTimeout(() => heroMedia.classList.remove('is-profile-settled'), 420);
+        }
+        resolve(completed);
+      };
+
+      const flightFrame = (now) => {
+        if (flightToken !== profileFlightToken) {
+          finishFlight(false);
+          return;
+        }
+
+        const rawProgress = Math.min(1, (now - startedAt) / duration);
+        const progress = easeInOut(rawProgress);
+        const scrollProgress = easeOut(Math.min(1, rawProgress / 0.74));
+        const clothLift = Math.sin(Math.PI * progress);
+        const motionScale = isCompactViewport ? 0.62 : 1;
+        const arc = clothLift * Math.min(isCompactViewport ? 46 : 84, window.innerHeight * 0.09);
+        const currentScrollTop = interpolate(startScrollTop, targetScrollTop, scrollProgress);
+        const currentTop = interpolate(sourceRect.top, targetViewportTop, progress) - arc;
+        const wrinkle = clothLift * (1 - rawProgress * 0.2);
+        const clothMotion = Math.max(0, Math.min(1, (rawProgress - 0.035) / 0.965));
+        const sway = Math.sin(clothMotion * Math.PI * 2.4) * wrinkle;
+        const rotate = sway * 4.6;
+        const skew = sway * 5.2;
+        const scaleX = 1 + wrinkle * 0.038;
+        const scaleY = 1 - wrinkle * 0.026;
+        const foldStrength = wrinkle.toFixed(3);
+        const clothPhase = clothMotion * Math.PI * 3.8;
+
+        window.scrollTo(0, currentScrollTop);
+        clothStrips.forEach((strip, index) => {
+          const distanceFromCenter = (index - 4) / 4;
+          const wave = Math.sin(clothPhase + index * 0.72) * wrinkle;
+          const secondaryWave = Math.cos(clothPhase * 0.72 + index * 0.45) * wrinkle;
+          const lift = (wave * 18 - Math.abs(distanceFromCenter) * wrinkle * 7) * motionScale;
+          const pinch = Math.cos(clothPhase + index * 0.6) * wrinkle * 3.5 * motionScale;
+          strip.style.transform = `translate3d(${pinch}px, ${lift}px, ${wave * 18 * motionScale}px) rotateY(${distanceFromCenter * wrinkle * -34 * motionScale}deg) rotateZ(${wave * 4.8 * motionScale}deg) skewY(${secondaryWave * 4.5 * motionScale}deg) scaleY(${1 + secondaryWave * 0.055 * motionScale})`;
+          strip.style.filter = `brightness(${1 + wave * 0.16}) contrast(${1 + wrinkle * 0.07})`;
+          strip.style.clipPath = `polygon(0 ${Math.max(0, 2 + wave * 5)}%, 100% ${Math.max(0, 1 - secondaryWave * 4)}%, 100% ${Math.min(100, 99 + wave * 3)}%, 0 ${Math.min(100, 98 - secondaryWave * 5)}%)`;
+        });
+        Object.assign(ghost.style, {
+          left: `${interpolate(sourceRect.left, targetRect.left, progress)}px`,
+          top: `${currentTop}px`,
+          width: `${interpolate(sourceRect.width, targetRect.width, progress)}px`,
+          height: `${interpolate(sourceRect.height, targetRect.height, progress)}px`,
+          borderRadius: `${interpolate(4, 12, progress)}px`,
+          transform: `perspective(920px) rotate(${rotate * motionScale}deg) rotateX(${wrinkle * 7 * motionScale}deg) rotateY(${sway * -8 * motionScale}deg) skew(${skew * motionScale}deg, ${sway * -1.8 * motionScale}deg) scale(${scaleX}, ${scaleY})`,
+          filter: `brightness(${interpolate(1.02, 1.055, progress)}) saturate(${interpolate(1.02, 1.08, progress)})`,
+          '--cloth-fold': foldStrength,
+          '--cloth-sway': `${sway.toFixed(3)}`,
+        });
+
+        if (rawProgress < 1) requestAnimationFrame(flightFrame);
+        else finishFlight(true);
+      };
+
+      requestAnimationFrame(flightFrame);
+    });
+  };
+
+  const setActiveProfile = async (profileId, shouldScroll = true, sourceImage = null, sourceFallback = null) => {
     const profile = teamProfiles.find((item) => item.id === profileId) || teamProfiles[0] || null;
     if (!profile) return;
+    const sourceFrame = sourceImage?.closest?.('.team-card-image-link') || sourceImage || sourceFallback;
+    const sourceBox = sourceFrame?.getBoundingClientRect();
+    const sourceRect = sourceBox
+      ? {
+          left: sourceBox.left,
+          top: sourceBox.top,
+          width: sourceBox.width,
+          height: sourceBox.height,
+        }
+      : null;
+    const sourceSrc = sourceImage?.currentSrc || sourceImage?.src || profile.imageUrl;
     history.replaceState(null, '', getProfileHref(profile.id));
-    renderProfile(profile);
-    if (shouldScroll) detailNode?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const shouldAnimate = shouldScroll && !prefersReducedMotion.matches;
+    renderProfile(profile, { deferDescription: shouldAnimate });
+    if (shouldScroll) {
+      const heroNode = document.querySelector('.team-hero');
+      const finalScrollTop = heroNode ? Math.max(0, window.scrollY + heroNode.getBoundingClientRect().top) : 0;
+      const completed = await animateProfileImageToHero(sourceRect, sourceSrc, finalScrollTop);
+      if (!completed) heroNode?.scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
+      if (shouldAnimate && profile.id === activeProfileId) typeDescription(profile.description);
+    } else {
+      await animateProfileImageToHero(sourceRect, sourceSrc);
+    }
   };
 
   const loadTeam = async () => {
@@ -261,13 +483,15 @@ const copy = {
   };
 
   gridNode?.addEventListener('click', (event) => {
-    const link = event.target.closest('a[href]');
+    if (event.defaultPrevented) return;
+    const clickedElement = event.target instanceof Element ? event.target : event.target?.parentElement;
+    const link = clickedElement?.closest('a[href]');
     if (!link) return;
     const card = link.closest('[data-team-card]');
     const profileId = card?.getAttribute('data-profile-id');
     if (!profileId) return;
     event.preventDefault();
-    setActiveProfile(profileId);
+    setActiveProfile(profileId, true, card.querySelector('img'), card);
   });
 
   window.addEventListener('popstate', () => {
@@ -340,13 +564,15 @@ const copy = {
   }
 
   .team-directory-heading {
-    display: flex;
-    gap: 2rem;
-    align-items: end;
-    justify-content: space-between;
+    max-width: 44rem;
+  }
+
+  .team-detail:not([hidden]) + .team-directory-heading {
+    margin-top: clamp(3rem, 6vw, 5rem);
   }
 
   .team-directory-heading p {
+    margin-top: 0.85rem;
     max-width: 31rem;
     color: var(--color-ink-600);
     line-height: 1.7;
@@ -366,10 +592,13 @@ const copy = {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.25rem;
-    margin-top: 2rem;
+    margin-top: clamp(2rem, 5vw, 3.5rem);
   }
 
   :global(.team-card) {
+    display: flex;
+    min-height: 22.25rem;
+    flex-direction: column;
     overflow: hidden;
     border-radius: 0.6rem;
     border: 1px solid rgba(11, 11, 15, 0.08);
@@ -408,9 +637,10 @@ const copy = {
   }
 
   :global(.team-card-body) {
-    display: grid;
-    min-height: 10.5rem;
-    align-content: start;
+    display: flex;
+    flex: 1;
+    min-height: 10.75rem;
+    flex-direction: column;
     padding: 1rem;
   }
 
@@ -433,6 +663,7 @@ const copy = {
     width: fit-content;
     align-items: center;
     justify-content: center;
+    align-self: center;
     margin-top: auto;
     border-radius: 999px;
     background: var(--color-ink-800);
@@ -458,12 +689,20 @@ const copy = {
     grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.65fr);
     gap: clamp(2rem, 5vw, 5rem);
     align-items: start;
-    margin-top: clamp(3rem, 7vw, 5rem);
+    margin-top: clamp(2rem, 5vw, 3.5rem);
+    border-top: 1px solid rgba(11, 11, 15, 0.08);
+    padding-top: clamp(2rem, 4vw, 3rem);
     scroll-margin-top: 7rem;
   }
 
   .team-detail[hidden] {
     display: none;
+  }
+
+  .team-detail.is-settled {
+    transition:
+      opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .team-detail-description {
@@ -473,6 +712,17 @@ const copy = {
     color: var(--color-ink-800);
     font-size: 1.03rem;
     line-height: 1.85;
+  }
+
+  .team-detail-description.is-typing p:last-child::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 0.18rem;
+    background: var(--color-gold-500);
+    vertical-align: -0.12em;
+    animation: team-type-caret 0.72s steps(1, end) infinite;
   }
 
   .team-quote {
@@ -503,6 +753,154 @@ const copy = {
     line-height: 1.5;
   }
 
+  :global(.team-profile-flight) {
+    position: fixed;
+    z-index: 80;
+    overflow: visible;
+    pointer-events: none;
+    box-shadow:
+      0 42px 90px -42px rgba(11, 11, 15, 0.92),
+      0 12px 28px -20px rgba(224, 189, 96, 0.44);
+    transform-origin: 50% 58%;
+    transform-style: preserve-3d;
+    will-change: left, top, width, height, border-radius, filter, transform;
+  }
+
+  :global(.team-profile-cloth) {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    overflow: hidden;
+    border-radius: inherit;
+    perspective: 760px;
+    transform-style: preserve-3d;
+    transform: scale(calc(1 + var(--cloth-fold, 0) * 0.018));
+    filter: contrast(calc(1 + var(--cloth-fold, 0) * 0.055));
+  }
+
+  :global(.team-profile-cloth-strip) {
+    position: relative;
+    flex: 0 0 calc(100% / 9 + 1px);
+    height: 100%;
+    margin-right: -1px;
+    backface-visibility: hidden;
+    transform-origin: 50% 50%;
+    will-change: transform, filter, clip-path;
+  }
+
+  :global(.team-profile-cloth-strip img) {
+    position: absolute;
+    top: 0;
+    width: 900%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center top;
+    pointer-events: none;
+  }
+
+  :global(.team-profile-cloth-strip::after) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 38%, rgba(0, 0, 0, 0.22)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%, rgba(0, 0, 0, 0.12));
+    mix-blend-mode: soft-light;
+    opacity: calc(var(--cloth-fold, 0) * 0.9);
+    transform: translateX(calc(var(--cloth-sway, 0) * 9px));
+  }
+
+  :global(.team-profile-flight::before),
+  :global(.team-profile-flight::after) {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    opacity: var(--cloth-fold, 0);
+    pointer-events: none;
+  }
+
+  :global(.team-profile-flight::before) {
+    background:
+      linear-gradient(106deg, transparent 14%, rgba(255, 255, 255, 0.56) 31%, transparent 46%),
+      linear-gradient(284deg, transparent 20%, rgba(11, 11, 15, 0.36) 43%, transparent 63%),
+      repeating-linear-gradient(
+        96deg,
+        rgba(255, 255, 255, 0.18) 0,
+        rgba(255, 255, 255, 0.18) 1px,
+        transparent 1px,
+        transparent 13px
+      );
+    mix-blend-mode: soft-light;
+    transform: translateX(calc(var(--cloth-sway, 0) * 18px));
+  }
+
+  :global(.team-profile-flight::after) {
+    box-shadow:
+      inset 22px 0 38px rgba(255, 255, 255, 0.16),
+      inset -30px 0 42px rgba(0, 0, 0, 0.3),
+      inset 0 18px 24px rgba(255, 255, 255, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transform: scaleX(calc(1 + var(--cloth-fold, 0) * 0.018));
+  }
+
+  .team-hero-media.is-receiving-profile {
+    box-shadow:
+      0 0 0 1px rgba(224, 189, 96, 0.26),
+      0 34px 84px -36px rgba(0, 0, 0, 0.98);
+  }
+
+  .team-hero-media.is-receiving-profile img {
+    opacity: 0;
+  }
+
+  .team-hero-media.is-profile-settled img {
+    animation: team-profile-settle 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes team-profile-settle {
+    0% {
+      opacity: 0.78;
+      transform: scale(1.025) skewX(-1.6deg);
+      filter: brightness(1.06) saturate(1.08);
+    }
+
+    62% {
+      opacity: 1;
+      transform: scale(0.996) skewX(0.45deg);
+      filter: brightness(1.015) saturate(1.03);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+      filter: brightness(1) saturate(1);
+    }
+  }
+
+  @keyframes team-type-caret {
+    0%,
+    48% {
+      opacity: 1;
+    }
+
+    49%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-detail-description.is-typing p:last-child::after {
+      animation: none;
+    }
+
+    .team-hero-media.is-profile-settled img {
+      animation: none;
+    }
+  }
+
   @media (max-width: 980px) {
     .team-hero-inner,
     .team-detail {
@@ -511,10 +909,15 @@ const copy = {
 
     .team-hero-media {
       width: min(100%, 26rem);
+      justify-self: start;
     }
 
     .team-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .team-detail {
+      gap: 1.5rem;
     }
   }
 
@@ -525,20 +928,89 @@ const copy = {
 
     .team-hero-inner {
       min-height: auto;
-      padding-block: 2.5rem 3rem;
+      gap: 1.75rem;
+      padding-block: 2.25rem 2.6rem;
     }
 
-    .team-directory-heading {
-      display: grid;
+    .team-hero-copy h1 {
+      font-size: clamp(2.35rem, 13vw, 3.35rem);
+      line-height: 1.02;
+    }
+
+    .team-hero-copy p {
+      font-size: 1rem;
+    }
+
+    .team-hero-media {
+      width: min(100%, 22rem);
+      border-radius: 0.65rem;
+      aspect-ratio: 1.28 / 1;
+    }
+
+    .team-directory {
+      padding-block: 2.75rem 4rem;
+    }
+
+    .team-detail {
+      margin-top: 0;
+      gap: 1.35rem;
+      padding-top: 1.75rem;
+      scroll-margin-top: 5.75rem;
+    }
+
+    .team-detail:not([hidden]) + .team-directory-heading {
+      margin-top: 2.5rem;
+    }
+
+    .team-detail-description {
       gap: 1rem;
+      margin-top: 1.35rem;
+      font-size: 0.96rem;
+      line-height: 1.75;
+    }
+
+    .team-quote {
+      padding: 1.2rem;
+    }
+
+    .team-quote-mark {
+      font-size: 3rem;
+    }
+
+    .team-quote p {
+      font-size: 1.2rem;
+    }
+
+    .team-directory-heading p {
+      max-width: none;
     }
 
     .team-grid {
       grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 1.75rem;
+    }
+
+    :global(.team-card) {
+      min-height: 20rem;
+    }
+
+    :global(.team-card-image-link) {
+      aspect-ratio: 1.6 / 1;
     }
 
     :global(.team-card-body) {
-      min-height: 9rem;
+      min-height: 8.75rem;
+      padding: 0.95rem;
+    }
+
+    :global(.team-card h3) {
+      font-size: 1.17rem;
+    }
+
+    :global(.team-profile-link) {
+      min-height: 2.25rem;
+      padding-inline: 1.1rem;
     }
   }
 </style>

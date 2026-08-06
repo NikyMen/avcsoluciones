@@ -95,7 +95,46 @@ const defaultDb = {
   teamProfiles: seedTeamProfiles,
   serviceProfiles: defaultServiceProfiles,
   settings: {},
+  trafficEvents: [],
 };
+
+const countryFallbacks = {
+  AR: 'Argentina',
+  BO: 'Bolivia',
+  BR: 'Brasil',
+  CA: 'Canada',
+  CL: 'Chile',
+  CO: 'Colombia',
+  DE: 'Alemania',
+  ES: 'Espana',
+  FR: 'Francia',
+  GB: 'Reino Unido',
+  IT: 'Italia',
+  MX: 'Mexico',
+  PE: 'Peru',
+  PY: 'Paraguay',
+  US: 'Estados Unidos',
+  UY: 'Uruguay',
+};
+
+const languageCountryHints = {
+  'es-ar': 'AR',
+  'es-bo': 'BO',
+  'es-br': 'BR',
+  'es-cl': 'CL',
+  'es-co': 'CO',
+  'es-es': 'ES',
+  'es-mx': 'MX',
+  'es-pe': 'PE',
+  'es-py': 'PY',
+  'es-uy': 'UY',
+  'en-ca': 'CA',
+  'en-gb': 'GB',
+  'en-us': 'US',
+  'pt-br': 'BR',
+};
+
+const countryNames = new Intl.DisplayNames(['es'], { type: 'region' });
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -134,6 +173,7 @@ const readDb = async () => {
   const db = { ...defaultDb, ...JSON.parse(raw) };
   if (!Array.isArray(db.teamProfiles) || db.teamProfiles.length === 0) db.teamProfiles = seedTeamProfiles;
   if (!db.serviceProfiles || typeof db.serviceProfiles !== 'object') db.serviceProfiles = defaultServiceProfiles;
+  if (!Array.isArray(db.trafficEvents)) db.trafficEvents = [];
   return db;
 };
 
@@ -316,6 +356,83 @@ const serializeTeamData = (db) => ({
   assignments: db.serviceProfiles || {},
 });
 
+const getClientIp = (req) => {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0]?.trim();
+  return forwarded || req.socket.remoteAddress || 'local';
+};
+
+const hashIp = (ip) => createHmac('sha256', sessionSecret).update(String(ip)).digest('base64url').slice(0, 18);
+
+const normalizeCountryCode = (value) => {
+  const code = String(value || '').trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(code) && code !== 'XX' ? code : '';
+};
+
+const inferCountryCode = (req) => {
+  const headerCode = normalizeCountryCode(
+    req.headers['cf-ipcountry'] ||
+      req.headers['x-vercel-ip-country'] ||
+      req.headers['cloudfront-viewer-country'] ||
+      req.headers['x-country-code']
+  );
+  if (headerCode) return headerCode;
+
+  const acceptLanguage = String(req.headers['accept-language'] || '').toLowerCase();
+  for (const token of acceptLanguage.split(',')) {
+    const lang = token.split(';')[0]?.trim();
+    if (languageCountryHints[lang]) return languageCountryHints[lang];
+  }
+  return 'PY';
+};
+
+const getCountryName = (code) => {
+  try {
+    return countryFallbacks[code] || countryNames.of(code) || code;
+  } catch {
+    return countryFallbacks[code] || code;
+  }
+};
+
+const serializeTrafficStats = (events, hours = 24) => {
+  const now = Date.now();
+  const windowMs = Math.max(1, Math.min(168, Number(hours) || 24)) * 60 * 60 * 1000;
+  const windowStart = now - windowMs;
+  const scoped = events.filter((event) => new Date(event.at).getTime() >= windowStart);
+  const byCountry = new Map();
+
+  for (const event of scoped) {
+    const current = byCountry.get(event.countryCode) || {
+      countryCode: event.countryCode,
+      countryName: event.countryName,
+      count: 0,
+      lastSeenAt: event.at,
+    };
+    current.count += 1;
+    if (new Date(event.at).getTime() > new Date(current.lastSeenAt).getTime()) current.lastSeenAt = event.at;
+    byCountry.set(event.countryCode, current);
+  }
+
+  const total = scoped.length;
+  const countries = [...byCountry.values()]
+    .map((entry) => ({
+      ...entry,
+      percentage: total ? Number(((entry.count / total) * 100).toFixed(1)) : 0,
+    }))
+    .sort((a, b) => b.count - a.count || a.countryName.localeCompare(b.countryName));
+  const recentEvents = [...scoped]
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+    .slice(0, 18)
+    .map(({ id, countryCode, countryName, at, path }) => ({ id, countryCode, countryName, at, path }));
+
+  return {
+    hours: Math.round(windowMs / 60 / 60 / 1000),
+    total,
+    countries,
+    topCountries: countries.slice(0, 5),
+    recentEvents,
+  };
+};
+
 const readMultipartText = (parts, name, fallback = '') =>
   sanitizeText(parts.find((part) => part.name === name)?.content.toString('utf8') ?? fallback);
 
@@ -430,6 +547,49 @@ const handleApi = async (req, res, url) => {
   if (url.pathname === '/api/team-profiles' && req.method === 'GET') {
     const db = await readDb();
     jsonResponse(res, 200, serializeTeamData(db));
+    return;
+  }
+
+  if (url.pathname === '/api/traffic/visit' && req.method === 'POST') {
+    const body = await parseJsonBody(req).catch(() => ({}));
+    const db = await readDb();
+    const now = Date.now();
+    const countryCode = inferCountryCode(req);
+    const ipHash = hashIp(getClientIp(req));
+    const cleanPath = sanitizeText(body.path || '/', 160) || '/';
+    const recentDuplicate = db.trafficEvents.some(
+      (event) =>
+        event.ipHash === ipHash &&
+        event.path === cleanPath &&
+        now - new Date(event.at).getTime() < 1000 * 60 * 15
+    );
+
+    if (!recentDuplicate) {
+      db.trafficEvents.push({
+        id: randomBytes(10).toString('hex'),
+        at: new Date(now).toISOString(),
+        countryCode,
+        countryName: getCountryName(countryCode),
+        path: cleanPath,
+        lang: sanitizeText(body.lang || '', 12),
+        referrer: sanitizeText(body.referrer || '', 260),
+        ipHash,
+      });
+      const retentionStart = now - 1000 * 60 * 60 * 24 * 30;
+      db.trafficEvents = db.trafficEvents
+        .filter((event) => new Date(event.at).getTime() >= retentionStart)
+        .slice(-5000);
+      await writeDb(db);
+    }
+
+    jsonResponse(res, 200, { ok: true });
+    return;
+  }
+
+  if (url.pathname === '/api/admin/traffic' && req.method === 'GET') {
+    const auth = await requireAuth(req, res);
+    if (!auth) return;
+    jsonResponse(res, 200, serializeTrafficStats(auth.db.trafficEvents || [], url.searchParams.get('hours') || 24));
     return;
   }
 

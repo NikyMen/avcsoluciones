@@ -89,7 +89,60 @@ const languages = ['ES', 'EN', 'PT'];
         </div>
       </header>
 
-      <section class="container-x py-9 sm:py-12">
+      <section class="container-x pt-9 sm:pt-12">
+        <section class="admin-traffic-hero" aria-labelledby="traffic-title">
+          <div class="admin-world-map" aria-label="Mapa politico de conexiones por pais" data-world-map>
+            <div class="admin-map-loading">Cargando mapa politico...</div>
+          </div>
+
+          <div class="admin-traffic-copy">
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Trafico global</p>
+            <h2 id="traffic-title" class="mt-2 font-display text-3xl sm:text-4xl leading-tight">Mapa vivo de conexiones</h2>
+            <p class="mt-3 max-w-xl text-sm leading-relaxed text-cream/62">
+              Cada nueva visita respira sobre su pais durante unos segundos y queda agregada para analizar las ultimas horas.
+            </p>
+
+            <div class="admin-traffic-stats" aria-label="Resumen de trafico">
+              <article>
+                <span>Conexiones 24 h</span>
+                <strong data-traffic-total>0</strong>
+              </article>
+              <article>
+                <span>Paises activos</span>
+                <strong data-traffic-countries>0</strong>
+              </article>
+              <article>
+                <span>Principal origen</span>
+                <strong data-traffic-top>Sin datos</strong>
+              </article>
+            </div>
+          </div>
+
+          <aside class="admin-traffic-panel">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Ultimas horas</p>
+                <h3 class="mt-1 font-display text-2xl">Origen del trafico</h3>
+              </div>
+              <span class="admin-live-pill" data-traffic-last>En espera</span>
+            </div>
+
+            <div class="mt-5 space-y-3" data-traffic-bars>
+              <p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay conexiones registradas.</p>
+            </div>
+
+            <button type="button" class="admin-expand-button mt-4" data-traffic-toggle aria-expanded="false">
+              Ver porcentaje exacto por pais
+            </button>
+            <button type="button" class="admin-demo-button mt-2" data-traffic-demo hidden>
+              Cargar muestra local
+            </button>
+            <div class="admin-traffic-detail" data-traffic-detail hidden></div>
+          </aside>
+        </section>
+      </section>
+
+      <section class="container-x py-5 sm:py-7">
         <div class="admin-dashboard">
           <article class="admin-metric">
             <span class="admin-metric-icon"><Icon name="briefcase" class="h-5 w-5" /></span>
@@ -386,6 +439,35 @@ const languages = ['ES', 'EN', 'PT'];
   let teamProfiles = [];
   let teamAssignments = {};
   let currentUser = null;
+  let trafficStats = null;
+  let trafficPoll = null;
+  let mapReady = false;
+  let trafficPulseTimer = null;
+  const trafficPulseQueue = [];
+  const countryPulseTimeouts = new Map();
+  const seenTrafficEventIds = new Set();
+  const localTrafficSample = {
+    hours: 24,
+    total: 47,
+    countries: [
+      { countryCode: 'PY', countryName: 'Paraguay', count: 18, percentage: 38.3, lastSeenAt: new Date().toISOString() },
+      { countryCode: 'BR', countryName: 'Brasil', count: 9, percentage: 19.1, lastSeenAt: new Date(Date.now() - 1000 * 60 * 4).toISOString() },
+      { countryCode: 'US', countryName: 'Estados Unidos', count: 7, percentage: 14.9, lastSeenAt: new Date(Date.now() - 1000 * 60 * 12).toISOString() },
+      { countryCode: 'AR', countryName: 'Argentina', count: 6, percentage: 12.8, lastSeenAt: new Date(Date.now() - 1000 * 60 * 22).toISOString() },
+      { countryCode: 'ES', countryName: 'Espana', count: 4, percentage: 8.5, lastSeenAt: new Date(Date.now() - 1000 * 60 * 38).toISOString() },
+      { countryCode: 'CL', countryName: 'Chile', count: 2, percentage: 4.3, lastSeenAt: new Date(Date.now() - 1000 * 60 * 51).toISOString() },
+      { countryCode: 'UY', countryName: 'Uruguay', count: 1, percentage: 2.1, lastSeenAt: new Date(Date.now() - 1000 * 60 * 67).toISOString() },
+    ],
+    topCountries: [],
+    recentEvents: [
+      { id: 'sample-py-1', countryCode: 'PY', countryName: 'Paraguay', at: new Date().toISOString(), path: '/' },
+      { id: 'sample-br-1', countryCode: 'BR', countryName: 'Brasil', at: new Date(Date.now() - 1000 * 8).toISOString(), path: '/pt' },
+      { id: 'sample-us-1', countryCode: 'US', countryName: 'Estados Unidos', at: new Date(Date.now() - 1000 * 16).toISOString(), path: '/en' },
+      { id: 'sample-ar-1', countryCode: 'AR', countryName: 'Argentina', at: new Date(Date.now() - 1000 * 24).toISOString(), path: '/' },
+      { id: 'sample-es-1', countryCode: 'ES', countryName: 'Espana', at: new Date(Date.now() - 1000 * 32).toISOString(), path: '/' },
+    ],
+  };
+  localTrafficSample.topCountries = localTrafficSample.countries.slice(0, 5);
 
   const api = async (path, options = {}) => {
     const response = await fetch(path, {
@@ -429,6 +511,15 @@ const languages = ['ES', 'EN', 'PT'];
     }).format(new Date(value));
   };
 
+  const formatRelativeTime = (value) => {
+    if (!value) return 'En espera';
+    const seconds = Math.max(0, Math.round((Date.now() - new Date(value).getTime()) / 1000));
+    if (seconds < 60) return `Hace ${seconds || 1} s`;
+    const minutes = Math.round(seconds / 60);
+    if (minutes < 60) return `Hace ${minutes} min`;
+    return `Hace ${Math.round(minutes / 60)} h`;
+  };
+
   const escapeHtml = (value) =>
     String(value)
       .replaceAll('&', '&amp;')
@@ -450,10 +541,177 @@ const languages = ['ES', 'EN', 'PT'];
     if (node) node.textContent = value;
   };
 
+  const getMapCountry = (countryCode) =>
+    document.querySelector(`[data-map-country="${CSS.escape(String(countryCode || '').toUpperCase())}"]`);
+
+  const loadWorldMap = async () => {
+    const container = document.querySelector('[data-world-map]');
+    if (!container || mapReady) return;
+    try {
+      const response = await fetch('/images/world-map.svg');
+      if (!response.ok) throw new Error('No se pudo cargar el mapa');
+      const svgText = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgText, 'image/svg+xml');
+      const svg = doc.querySelector('svg');
+      if (!svg) throw new Error('Mapa invalido');
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', 'Mapamundi politico con paises reales');
+      svg.querySelectorAll('path[id], g[id]').forEach((node) => {
+        const code = node.id?.toUpperCase();
+        if (!/^[A-Z]{2}$/.test(code)) return;
+        node.classList.add('admin-map-country');
+        node.setAttribute('data-map-country', code);
+        node.querySelectorAll('path').forEach((path) => path.classList.add('admin-map-country-part'));
+      });
+      container.replaceChildren(svg);
+      mapReady = true;
+      renderTrafficDashboard();
+    } catch {
+      container.innerHTML = '<div class="admin-map-loading">No se pudo cargar el mapa politico.</div>';
+    }
+  };
+
   const loadTeam = async () => {
     const { profiles, assignments } = await api('/api/team-profiles');
     teamProfiles = Array.isArray(profiles) ? profiles : [];
     teamAssignments = assignments || {};
+  };
+
+  const loadTraffic = async () => {
+    trafficStats = await api('/api/admin/traffic?hours=24');
+  };
+
+  const pulseMapCountryNow = (countryCode) => {
+    const node = getMapCountry(countryCode);
+    if (!node) return;
+    const cleanCode = String(countryCode || '').toUpperCase();
+    window.clearTimeout(countryPulseTimeouts.get(cleanCode));
+
+    if (!node.classList.contains('is-breathing')) {
+      node.classList.add('is-breathing');
+    }
+
+    countryPulseTimeouts.set(
+      cleanCode,
+      window.setTimeout(() => {
+        node.classList.remove('is-breathing');
+        countryPulseTimeouts.delete(cleanCode);
+      }, 3600)
+    );
+  };
+
+  const runTrafficPulseQueue = () => {
+    if (trafficPulseTimer || !trafficPulseQueue.length) return;
+    const batchSize = trafficPulseQueue.length > 8 ? 3 : 1;
+    const nextBatch = trafficPulseQueue.splice(0, batchSize);
+    nextBatch.forEach(pulseMapCountryNow);
+    trafficPulseTimer = window.setTimeout(() => {
+      trafficPulseTimer = null;
+      runTrafficPulseQueue();
+    }, batchSize > 1 ? 1700 : 2300);
+  };
+
+  const enqueueCountryPulse = (countryCode) => {
+    const cleanCode = String(countryCode || '').toUpperCase();
+    if (!cleanCode || !getMapCountry(cleanCode)) return;
+    trafficPulseQueue.push(cleanCode);
+    runTrafficPulseQueue();
+  };
+
+  const trafficBarMarkup = (entry, maxCount) => {
+    const width = Math.max(6, Math.round((entry.count / Math.max(1, maxCount)) * 100));
+    return `
+      <div class="admin-traffic-row">
+        <div class="admin-traffic-row-top">
+          <span>${escapeHtml(entry.countryName)}</span>
+          <strong>${entry.count} - ${entry.percentage.toFixed(1)}%</strong>
+        </div>
+        <div class="admin-traffic-track">
+          <span style="width:${width}%"></span>
+        </div>
+      </div>
+    `;
+  };
+
+  const renderTrafficDashboard = () => {
+    if (!trafficStats) return;
+    const countries = Array.isArray(trafficStats.countries) ? trafficStats.countries : [];
+    const topCountries = Array.isArray(trafficStats.topCountries) ? trafficStats.topCountries : [];
+    const recentEvents = Array.isArray(trafficStats.recentEvents) ? trafficStats.recentEvents : [];
+    const maxCount = Math.max(1, ...topCountries.map((entry) => entry.count));
+
+    setText('[data-traffic-total]', String(trafficStats.total || 0));
+    setText('[data-traffic-countries]', String(countries.length));
+    setText('[data-traffic-top]', topCountries[0] ? topCountries[0].countryName : 'Sin datos');
+    setText('[data-traffic-last]', recentEvents[0] ? `${recentEvents[0].countryName} - ${formatRelativeTime(recentEvents[0].at)}` : 'En espera');
+
+    document.querySelectorAll('[data-map-country]').forEach((node) => node.classList.remove('has-traffic'));
+
+    recentEvents.forEach((event) => {
+      if (seenTrafficEventIds.has(event.id)) return;
+      seenTrafficEventIds.add(event.id);
+      enqueueCountryPulse(event.countryCode);
+    });
+
+    const bars = document.querySelector('[data-traffic-bars]');
+    if (bars) {
+      bars.innerHTML = topCountries.length
+        ? topCountries.map((entry) => trafficBarMarkup(entry, maxCount)).join('')
+        : '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay conexiones registradas.</p>';
+    }
+
+    const detail = document.querySelector('[data-traffic-detail]');
+    if (detail) {
+      detail.innerHTML = countries.length
+        ? countries
+            .map(
+              (entry) => `
+                <div>
+                  <span>${escapeHtml(entry.countryName)}</span>
+                  <strong>${entry.percentage.toFixed(1)}%</strong>
+                </div>
+              `
+            )
+            .join('')
+        : '<p class="text-sm text-cream/45">Sin conexiones para detallar.</p>';
+    }
+  };
+
+  const refreshTrafficDashboard = async () => {
+    try {
+      await loadTraffic();
+      renderTrafficDashboard();
+    } catch {
+      setText('[data-traffic-last]', 'Sin conexion');
+    }
+  };
+
+  const showLocalTrafficSample = () => {
+    seenTrafficEventIds.clear();
+    trafficStats = {
+      ...localTrafficSample,
+      countries: localTrafficSample.countries.map((entry) => ({ ...entry })),
+      topCountries: localTrafficSample.topCountries.map((entry) => ({ ...entry })),
+      recentEvents: localTrafficSample.recentEvents.map((event, index) => ({
+        ...event,
+        id: `${event.id}-${Date.now()}`,
+        at: new Date(Date.now() - index * 900).toISOString(),
+      })),
+    };
+    renderTrafficDashboard();
+  };
+
+  const startTrafficPolling = () => {
+    if (trafficPoll) window.clearInterval(trafficPoll);
+    trafficPoll = window.setInterval(refreshTrafficDashboard, 20000);
+  };
+
+  const stopTrafficPolling = () => {
+    if (trafficPoll) window.clearInterval(trafficPoll);
+    trafficPoll = null;
   };
 
   const renderLocation = async () => {
@@ -579,10 +837,11 @@ const languages = ['ES', 'EN', 'PT'];
   };
 
   const renderAdmin = async () => {
-    await loadTeam();
+    await Promise.all([loadTeam(), loadTraffic().catch(() => null), loadWorldMap()]);
     renderProfiles();
     renderServiceAssignments();
     renderDashboard();
+    renderTrafficDashboard();
     await renderLocation();
   };
 
@@ -592,9 +851,11 @@ const languages = ['ES', 'EN', 'PT'];
     adminApp?.classList.remove('hidden');
     setText('[data-session-user]', user?.name || user?.username || 'admin');
     await renderAdmin();
+    startTrafficPolling();
   };
 
   const showLogin = () => {
+    stopTrafficPolling();
     adminApp?.classList.add('hidden');
     loginScreen?.classList.remove('hidden');
   };
@@ -609,6 +870,10 @@ const languages = ['ES', 'EN', 'PT'];
   };
 
   bootstrap();
+
+  if (['localhost', '127.0.0.1', '::1'].includes(location.hostname)) {
+    document.querySelector('[data-traffic-demo]')?.removeAttribute('hidden');
+  }
 
   loginForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -633,6 +898,18 @@ const languages = ['ES', 'EN', 'PT'];
     currentUser = null;
     showLogin();
   });
+
+  document.querySelector('[data-traffic-toggle]')?.addEventListener('click', (event) => {
+    const button = event.currentTarget;
+    const detail = document.querySelector('[data-traffic-detail]');
+    if (!detail) return;
+    const nextExpanded = detail.hasAttribute('hidden');
+    detail.toggleAttribute('hidden', !nextExpanded);
+    button.setAttribute('aria-expanded', String(nextExpanded));
+    button.textContent = nextExpanded ? 'Ocultar detalle por pais' : 'Ver porcentaje exacto por pais';
+  });
+
+  document.querySelector('[data-traffic-demo]')?.addEventListener('click', showLocalTrafficSample);
 
   document.querySelector('[data-new-profile-form]')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -733,6 +1010,10 @@ const languages = ['ES', 'EN', 'PT'];
     font-family: var(--font-sans);
   }
 
+  :global(.admin-shell ~ .whatsapp-floating) {
+    display: none;
+  }
+
   .admin-login-screen.hidden,
   [data-admin-app].hidden {
     display: none;
@@ -809,16 +1090,30 @@ const languages = ['ES', 'EN', 'PT'];
 
   .admin-file {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     border-radius: 0.9rem;
     border: 1px solid rgba(255, 255, 255, 0.11);
     background: rgba(11, 11, 15, 0.58);
     padding: 0.7rem;
     color: rgba(247, 245, 240, 0.7);
-    font-size: 0.82rem;
+    font-size: 0.76rem;
+  }
+
+  .admin-file::file-selector-button {
+    max-width: 8.6rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--color-gold-200);
+    font-weight: 800;
+    margin-right: 0.55rem;
+    padding: 0.42rem 0.55rem;
   }
 
   .admin-profile-card,
   .admin-service-assignment {
+    min-width: 0;
     border-radius: 1.15rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.035);
@@ -840,6 +1135,7 @@ const languages = ['ES', 'EN', 'PT'];
 
   .admin-profile-media {
     min-width: 0;
+    overflow: hidden;
   }
 
   .admin-profile-fields {
@@ -851,6 +1147,7 @@ const languages = ['ES', 'EN', 'PT'];
   .admin-profile-image {
     display: block;
     width: 100%;
+    max-width: 100%;
     aspect-ratio: 4 / 5;
     border-radius: 1rem;
     border: 1px solid rgba(212, 175, 55, 0.2);
@@ -1082,6 +1379,297 @@ const languages = ['ES', 'EN', 'PT'];
     color: var(--color-gold-300);
   }
 
+  .admin-traffic-hero {
+    position: relative;
+    display: grid;
+    min-height: 31rem;
+    grid-template-columns: minmax(0, 1fr) minmax(19rem, 24rem);
+    gap: clamp(1rem, 2vw, 1.5rem);
+    overflow: hidden;
+    border-radius: 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+      radial-gradient(34rem 22rem at 18% 28%, rgba(212, 175, 55, 0.14), transparent),
+      rgba(255, 255, 255, 0.035);
+    box-shadow: 0 28px 90px -42px rgba(0, 0, 0, 0.92);
+    padding: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .admin-traffic-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 4.5rem 4.5rem;
+    mask-image: linear-gradient(90deg, black, transparent 76%);
+  }
+
+  .admin-world-map {
+    position: absolute;
+    inset: 1rem min(27rem, 35vw) 0 0.25rem;
+    opacity: 0.92;
+  }
+
+  :global(.admin-world-map svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  :global(.admin-world-map path) {
+    fill: rgba(247, 245, 240, 0.07);
+    stroke: rgba(247, 245, 240, 0.36);
+    stroke-width: 0.62;
+    vector-effect: non-scaling-stroke;
+    transition:
+      fill 1.15s cubic-bezier(0.37, 0, 0.19, 1),
+      stroke 1.15s cubic-bezier(0.37, 0, 0.19, 1),
+      filter 1.15s cubic-bezier(0.37, 0, 0.19, 1);
+  }
+
+  :global(.admin-world-map .admin-map-country.is-breathing path),
+  :global(.admin-world-map .admin-map-country.is-breathing .admin-map-country-part) {
+    fill: rgba(224, 189, 96, 0.9);
+    stroke: rgba(247, 245, 240, 0.86);
+    filter: drop-shadow(0 0 0.75rem rgba(212, 175, 55, 0.45));
+  }
+
+  .admin-traffic-copy,
+  .admin-traffic-panel {
+    position: relative;
+    z-index: 1;
+  }
+
+  .admin-traffic-copy {
+    position: static;
+    align-self: start;
+    justify-self: start;
+    max-width: 39rem;
+    padding: clamp(0.35rem, 1.8vw, 1rem);
+    text-align: left;
+  }
+
+  .admin-traffic-copy h2,
+  .admin-traffic-copy p {
+    position: relative;
+    z-index: 2;
+    text-align: left;
+  }
+
+  .admin-traffic-stats {
+    position: absolute;
+    left: clamp(1rem, 3vw, 1.55rem);
+    bottom: clamp(1rem, 3vw, 1.55rem);
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(6.8rem, 9.7rem));
+    width: fit-content;
+    max-width: 100%;
+    gap: 0.65rem;
+    margin-top: 1rem;
+  }
+
+  .admin-traffic-stats article {
+    display: flex;
+    min-height: 5.25rem;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    background: rgba(11, 11, 15, 0.24);
+    padding: 0.68rem 0.72rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .admin-traffic-stats span {
+    display: block;
+    width: 100%;
+    color: rgba(247, 245, 240, 0.48);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.25;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .admin-traffic-stats strong {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: 0.4rem;
+    overflow-wrap: anywhere;
+    color: var(--color-gold-300);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.1vw, 1.85rem);
+    font-weight: 600;
+    line-height: 1;
+    text-align: left;
+  }
+
+  .admin-traffic-stats article:nth-child(3) strong {
+    font-size: clamp(1.1rem, 1.65vw, 1.48rem);
+    line-height: 1.08;
+  }
+
+  .admin-traffic-panel {
+    align-self: stretch;
+    border-radius: 1.1rem;
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    background: rgba(11, 11, 15, 0.68);
+    padding: 1rem;
+    backdrop-filter: blur(14px);
+  }
+
+  .admin-live-pill {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 0.45rem 0.65rem;
+    color: var(--color-gold-200);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: right;
+  }
+
+  :global(.admin-traffic-row-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: rgba(247, 245, 240, 0.76);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  :global(.admin-traffic-row-top span) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.admin-traffic-row-top strong) {
+    flex: 0 0 auto;
+    color: var(--color-gold-300);
+    font-size: 0.76rem;
+  }
+
+  :global(.admin-traffic-track) {
+    height: 0.48rem;
+    margin-top: 0.55rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.075);
+  }
+
+  :global(.admin-traffic-track span) {
+    display: block;
+    height: 100%;
+    min-width: 0.4rem;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-gold-400), var(--color-gold-200));
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.28);
+    transition: width 0.35s ease;
+  }
+
+  .admin-expand-button {
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 175, 55, 0.34);
+    background: rgba(212, 175, 55, 0.08);
+    padding: 0.7rem 0.95rem;
+    color: var(--color-gold-200);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.2;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .admin-expand-button:hover {
+    border-color: rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.13);
+  }
+
+  .admin-demo-button {
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.045);
+    padding: 0.65rem 0.95rem;
+    color: rgba(247, 245, 240, 0.72);
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.2;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .admin-demo-button:hover {
+    background: rgba(255, 255, 255, 0.075);
+    color: var(--color-cream);
+  }
+
+  .admin-demo-button[hidden] {
+    display: none;
+  }
+
+  .admin-map-loading {
+    display: grid;
+    height: 100%;
+    min-height: 12rem;
+    place-items: center;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+    color: rgba(247, 245, 240, 0.42);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .admin-traffic-detail {
+    display: grid;
+    gap: 0.55rem;
+    max-height: 13rem;
+    margin-top: 0.9rem;
+    overflow: auto;
+    padding-right: 0.25rem;
+  }
+
+  .admin-traffic-detail[hidden] {
+    display: none;
+  }
+
+  :global(.admin-traffic-detail div) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.045);
+    padding: 0.55rem 0.65rem;
+    color: rgba(247, 245, 240, 0.68);
+    font-size: 0.78rem;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  :global(.admin-traffic-detail strong) {
+    color: var(--color-gold-300);
+  }
+
   .admin-chart-row [data-chart-bar] {
     min-width: 0.35rem;
     transition: width 0.25s ease;
@@ -1101,18 +1689,70 @@ const languages = ['ES', 'EN', 'PT'];
   }
 
   @media (max-width: 920px) {
+    .admin-traffic-hero {
+      min-height: 0;
+      grid-template-columns: 1fr;
+    }
+
+    .admin-world-map {
+      position: relative;
+      inset: auto;
+      height: clamp(15rem, 54vw, 24rem);
+      order: 1;
+    }
+
+    .admin-traffic-copy {
+      order: 2;
+      align-self: start;
+      justify-self: start;
+      padding: 0;
+    }
+
+    .admin-traffic-panel {
+      order: 3;
+    }
+
     .admin-dashboard {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 560px) {
+    .admin-traffic-stats {
+      position: static;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+    }
+
+    .admin-world-map {
+      height: 14rem;
+    }
+
+    .admin-panel {
+      padding: 1rem !important;
+    }
+
     .admin-dashboard {
       grid-template-columns: 1fr;
     }
 
     .admin-profile-edit-grid {
       grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+
+    .admin-profile-card,
+    .admin-service-assignment {
+      padding: 0.85rem;
+    }
+
+    .admin-profile-image {
+      border-radius: 0.85rem;
+    }
+
+    .admin-file {
+      padding: 0.58rem;
+      font-size: 0.7rem;
     }
   }
 </style>

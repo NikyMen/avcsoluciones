@@ -131,6 +131,27 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
       applyContactLocation();
 
+      const recordTrafficVisit = () => {
+        if (location.pathname.startsWith('/admin')) return;
+        const visitKey = `avc-traffic:${location.pathname}:${new Date().toISOString().slice(0, 13)}`;
+        if (sessionStorage.getItem(visitKey)) return;
+        sessionStorage.setItem(visitKey, '1');
+
+        fetch('/api/traffic/visit', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            path: location.pathname,
+            lang: document.documentElement.lang || navigator.language || '',
+            referrer: document.referrer || '',
+          }),
+          keepalive: true,
+        }).catch(() => null);
+      };
+
+      recordTrafficVisit();
+
       // Reveal-on-scroll
       const io = new IntersectionObserver(
         (entries) => {

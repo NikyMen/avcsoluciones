@@ -169,7 +169,7 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
             <p class="text-xs uppercase tracking-wider font-semibold text-gold-300">Equipo asignado</p>
             <span class="service-team-count" data-service-team-count></span>
           </div>
-          <p class="mt-2 text-sm text-cream/55" data-service-team-empty>Todavia no hay integrantes asignados para este servicio.</p>
+          <p class="mt-2 text-sm text-cream/55" data-service-team-empty>Todavía no hay integrantes asignados para este servicio.</p>
           <div class="service-team-grid mt-4" data-service-team-list></div>
         </div>
       </div>
@@ -274,8 +274,8 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
       <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-ink-950 to-transparent z-10"></div>
       <div class="marquee-track gap-5">
         {[...t.allies.items, ...t.allies.items].map((a) => (
-          <div class="shrink-0 grid place-items-center h-24 w-52 rounded-2xl border border-white/10 bg-white/[0.03] text-cream/40 font-display text-lg">
-            {a}
+          <div class="allies-logo-card shrink-0 grid place-items-center h-24 w-52 rounded-2xl border border-white/10 bg-white/[0.04]">
+            <img src={a.logo} alt={a.name} loading="lazy" decoding="async" />
           </div>
         ))}
       </div>
@@ -410,7 +410,7 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
     const profileUrl = `${teamPagePath}?perfil=${encodeURIComponent(profile.id)}`;
     return `
       <a class="service-team-profile" href="${profileUrl}" aria-label="Ver perfil de ${escapeProfileHtml(profile.name)}" title="${escapeProfileHtml(profile.name)}">
-        <img src="${escapeProfileHtml(profile.imageUrl || '/images/logo-icon.png')}" alt="${escapeProfileHtml(profile.name)}" />
+        <img src="${escapeProfileHtml(profile.imageUrl || '/images/logoAVC.jpeg')}" alt="${escapeProfileHtml(profile.name)}" />
       </a>
     `;
   };
@@ -473,6 +473,38 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
   .service-card {
     cursor: pointer;
     min-height: 16.5rem;
+  }
+
+  .allies-logo-card {
+    padding: 1.15rem 1.4rem;
+    transition:
+      border-color 0.22s ease,
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .allies-logo-card img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: grayscale(1) brightness(1.14);
+    opacity: 0.78;
+    transition:
+      filter 0.22s ease,
+      opacity 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .allies-logo-card:hover {
+    border-color: color-mix(in srgb, var(--color-gold-400) 42%, transparent);
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-2px);
+  }
+
+  .allies-logo-card:hover img {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.02);
   }
 
   /* Guarantee a capitalized first letter even if a browser translator

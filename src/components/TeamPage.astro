@@ -15,13 +15,13 @@ const copy = {
     title: 'Personas expertas para cada etapa de tu empresa',
     lead:
       'Conoce a los profesionales que sostienen nuestras soluciones contables, tributarias, financieras y empresariales.',
-    contact: 'Contactenos',
+    contact: 'Contáctenos',
     directoryTitle: 'Nuestro equipo',
-    directoryLead: 'Selecciona un perfil para ver su trayectoria y areas de especializacion.',
+    directoryLead: 'Selecciona un perfil para ver su trayectoria y áreas de especialización.',
     viewProfile: 'Ver perfil',
     loading: 'Cargando perfiles del equipo...',
-    empty: 'Todavia no hay integrantes cargados.',
-    quote: 'Acompanamos cada decision con criterio tecnico, cercania y foco en resultados.',
+    empty: 'Todavía no hay integrantes cargados.',
+    quote: 'Acompañamos cada decisión con criterio técnico, cercanía y foco en resultados.',
     quoteBy: 'AVC Soluciones Empresariales',
     profileFallback: 'Perfil profesional',
   },
@@ -46,14 +46,14 @@ const copy = {
     eyebrow: 'Equipe profissional',
     title: 'Especialistas para cada etapa da sua empresa',
     lead:
-      'Conheca os profissionais por tras das nossas solucoes contabeis, tributarias, financeiras e empresariais.',
+      'Conheça os profissionais por trás das nossas soluções contábeis, tributárias, financeiras e empresariais.',
     contact: 'Fale conosco',
     directoryTitle: 'Nossa equipe',
-    directoryLead: 'Selecione um perfil para ver sua trajetoria e areas de especializacao.',
+    directoryLead: 'Selecione um perfil para ver sua trajetória e áreas de especialização.',
     viewProfile: 'Ver perfil',
     loading: 'Carregando perfis da equipe...',
-    empty: 'Ainda nao ha integrantes cadastrados.',
-    quote: 'Acompanhamos cada decisao com criterio tecnico, proximidade e foco em resultados.',
+    empty: 'Ainda não há integrantes cadastrados.',
+    quote: 'Acompanhamos cada decisão com critério técnico, proximidade e foco em resultados.',
     quoteBy: 'AVC Soluciones Empresariales',
     profileFallback: 'Perfil profissional',
   },
@@ -83,7 +83,7 @@ const copy = {
       </div>
 
       <div class="team-hero-media reveal" data-team-hero-media hidden>
-        <img src="/images/logo-icon.png" alt="" data-team-hero-image />
+        <img src="/images/logoAVC.jpeg" alt="" data-team-hero-image />
       </div>
     </div>
   </section>
@@ -197,7 +197,7 @@ const copy = {
         return `
           <article class="team-card ${isActive ? 'is-active' : ''}" data-team-card data-profile-id="${escapeHtml(profile.id)}">
             <a href="${getProfileHref(profile.id)}" class="team-card-image-link" aria-label="${escapeHtml(copy.viewProfile)}: ${escapeHtml(profile.name)}">
-              <img src="${escapeHtml(profile.imageUrl || '/images/logo-icon.png')}" alt="${escapeHtml(profile.name)}" />
+              <img src="${escapeHtml(profile.imageUrl || '/images/logoAVC.jpeg')}" alt="${escapeHtml(profile.name)}" />
             </a>
             <div class="team-card-body">
               <h3>${escapeHtml(profile.name)}</h3>
@@ -277,7 +277,7 @@ const copy = {
     heroName.textContent = profile.name || copy.directoryTitle;
     heroRole.textContent = role;
     heroSpecialty.textContent = specialty;
-    heroImage.src = profile.imageUrl || '/images/logo-icon.png';
+    heroImage.src = profile.imageUrl || '/images/logoAVC.jpeg';
     heroImage.alt = profile.name || '';
 
     detailName.textContent = profile.name || '';

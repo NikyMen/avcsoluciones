@@ -77,7 +77,7 @@ export interface Content {
     title: string;
     lead: string;
     note: string;
-    items: string[];
+    items: { name: string; logo: string }[];
   };
   contact: {
     eyebrow: string;
@@ -168,7 +168,7 @@ const es: Content = {
       { icon: 'scale', name: 'Asesoría jurídica notarial empresarial', desc: 'Apoyo legal en contratos, cumplimiento normativo y prevención de riesgos legales.', target: 'Empresas y emprendedores.' },
       { icon: 'megaphone', name: 'Marketing y publicidad', desc: 'Estrategias de marketing digital y posicionamiento de marca orientadas a resultados.', target: 'Empresas que buscan visibilidad y crecimiento comercial.' },
       { icon: 'graduation', name: 'Capacitaciones y acompañamiento', desc: 'Talleres y formación práctica en gestión empresarial para emprendedores y equipos.', target: 'Emprendedores y equipos administrativos.' },
-      { icon: 'cpu', name: 'Tecnología y Sistemas', desc: 'Transformación digital, sistemas de gestión e implementación tecnológica adaptada a tu operación.', target: 'Empresas que buscan digitalizar y escalar.' },
+      { icon: 'cpu', name: 'Tecnología y sistemas', desc: 'Transformación digital, sistemas de gestión e implementación tecnológica adaptada a tu operación.', target: 'Empresas que buscan digitalizar y escalar.' },
     ],
   },
   sectors: {
@@ -215,15 +215,21 @@ const es: Content = {
     eyebrow: 'Acuerdos comerciales',
     title: 'Aliados estratégicos que potencian tu crecimiento',
     lead: 'Construimos una red de alianzas con organizaciones de sólida trayectoria y relevancia en el mercado.',
-    note: 'Espacio reservado para los logotipos y reseñas de nuestras empresas aliadas.',
-    items: ['Aliado 01', 'Aliado 02', 'Aliado 03', 'Aliado 04', 'Aliado 05', 'Aliado 06'],
+    note: 'Una red de empresas aliadas que complementan nuestras soluciones para acompañar mejor a cada cliente.',
+    items: [
+      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
+      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
+      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
+      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+    ],
   },
   contact: {
     eyebrow: 'Contacto',
     title: 'Conversemos sobre el crecimiento de tu empresa',
     lead: 'Estamos para ayudarte a ordenar, cumplir y crecer. Escribinos y coordinamos una reunión.',
     whatsapp: 'WhatsApp',
-    email: 'Email',
+    email: 'Correo electrónico',
     address: 'Dirección',
     hours: 'Horario',
     whatsappValue: contact.whatsappValue,
@@ -239,7 +245,7 @@ const es: Content = {
   finalCta: {
     title: 'Agenda una sesión estratégica hoy',
     text: 'Ofrecemos un diagnóstico gratuito y un presupuesto adaptado a tus necesidades reales.',
-    button: 'Contactanos por WhatsApp',
+    button: 'Contáctanos por WhatsApp',
   },
   footer: {
     tagline: 'Impulsando tu crecimiento con soluciones integrales y asesoría experta.',
@@ -304,7 +310,7 @@ const en: Content = {
       { icon: 'scale', name: 'Corporate legal and notarial advisory', desc: 'Legal support for contracts, regulatory compliance and legal risk prevention.', target: 'Companies and entrepreneurs.' },
       { icon: 'megaphone', name: 'Marketing & advertising', desc: 'Digital marketing strategies and brand positioning focused on results.', target: 'Companies seeking visibility and commercial growth.' },
       { icon: 'graduation', name: 'Training & coaching', desc: 'Workshops and practical training in business management for entrepreneurs and teams.', target: 'Entrepreneurs and administrative teams.' },
-      { icon: 'cpu', name: 'Technology & Systems', desc: 'Digital transformation, management systems and technology implementation tailored to your operation.', target: 'Companies looking to digitalize and scale.' },
+      { icon: 'cpu', name: 'Technology & systems', desc: 'Digital transformation, management systems and technology implementation tailored to your operation.', target: 'Companies looking to digitalize and scale.' },
     ],
   },
   sectors: {
@@ -351,8 +357,14 @@ const en: Content = {
     eyebrow: 'Commercial partners',
     title: 'Strategic allies that boost your growth',
     lead: 'We build a network of alliances with organizations of solid track record and market relevance.',
-    note: 'Space reserved for the logos and reviews of our partner companies.',
-    items: ['Partner 01', 'Partner 02', 'Partner 03', 'Partner 04', 'Partner 05', 'Partner 06'],
+    note: 'A network of partner companies that complements our solutions to better support every client.',
+    items: [
+      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
+      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
+      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
+      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+    ],
   },
   contact: {
     eyebrow: 'Contact',
@@ -440,7 +452,7 @@ const pt: Content = {
       { icon: 'scale', name: 'Assessoria jurídica notarial empresarial', desc: 'Apoio jurídico em contratos, conformidade normativa e prevenção de riscos legais.', target: 'Empresas e empreendedores.' },
       { icon: 'megaphone', name: 'Marketing e publicidade', desc: 'Estratégias de marketing digital e posicionamento de marca orientadas a resultados.', target: 'Empresas que buscam visibilidade e crescimento comercial.' },
       { icon: 'graduation', name: 'Capacitações e acompanhamento', desc: 'Workshops e formação prática em gestão empresarial para empreendedores e equipes.', target: 'Empreendedores e equipes administrativas.' },
-      { icon: 'cpu', name: 'Tecnologia e Sistemas', desc: 'Transformação digital, sistemas de gestão e implementação tecnológica adaptada à sua operação.', target: 'Empresas que buscam digitalizar e escalar.' },
+      { icon: 'cpu', name: 'Tecnologia e sistemas', desc: 'Transformação digital, sistemas de gestão e implementação tecnológica adaptada à sua operação.', target: 'Empresas que buscam digitalizar e escalar.' },
     ],
   },
   sectors: {
@@ -487,8 +499,14 @@ const pt: Content = {
     eyebrow: 'Acordos comerciais',
     title: 'Aliados estratégicos que potencializam seu crescimento',
     lead: 'Construímos uma rede de alianças com organizações de sólida trajetória e relevância no mercado.',
-    note: 'Espaço reservado para os logotipos e resenhas das nossas empresas parceiras.',
-    items: ['Parceiro 01', 'Parceiro 02', 'Parceiro 03', 'Parceiro 04', 'Parceiro 05', 'Parceiro 06'],
+    note: 'Uma rede de empresas parceiras que complementa nossas soluções para acompanhar melhor cada cliente.',
+    items: [
+      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
+      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
+      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
+      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+    ],
   },
   contact: {
     eyebrow: 'Contato',

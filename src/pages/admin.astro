@@ -25,7 +25,7 @@ const languages = ['ES', 'EN', 'PT'];
           <p class="eyebrow !text-gold-300">Acceso interno</p>
           <h1 class="mt-4 text-4xl leading-tight">Panel administrador</h1>
           <p class="mt-4 text-sm leading-relaxed text-cream/62">
-            Ingresa con tu usuario para administrar perfiles del equipo y revisar las estadisticas principales de la web.
+            Ingresa con tu usuario para administrar perfiles del equipo y revisar las estadísticas principales de la web.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ const languages = ['ES', 'EN', 'PT'];
           </label>
 
           <label class="block">
-            <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Contrasena</span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Contraseña</span>
             <input
               class="admin-input mt-2"
               name="password"
@@ -55,7 +55,7 @@ const languages = ['ES', 'EN', 'PT'];
           </label>
 
           <p class="hidden rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-sm text-red-100" data-login-error>
-            Usuario o contrasena incorrectos.
+            Usuario o contraseña incorrectos.
           </p>
 
           <button type="submit" class="btn btn-gold w-full justify-center">Ingresar</button>
@@ -75,15 +75,15 @@ const languages = ['ES', 'EN', 'PT'];
               <p class="admin-section-kicker eyebrow !text-gold-300">Panel administrador</p>
               <h1 class="mt-4 text-4xl sm:text-5xl leading-tight">Dashboard y equipo por servicio</h1>
               <p class="mt-4 text-cream/70 leading-relaxed">
-                Controla las fichas profesionales que aparecen en el sitio publico y asigna integrantes a cada servicio.
+                Controla las fichas profesionales que aparecen en el sitio público y asigna integrantes a cada servicio.
               </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
               <span class="rounded-full border border-gold-400/25 bg-gold-400/10 px-3 py-1.5 text-xs font-semibold text-gold-200">
-                Sesion: <span data-session-user>admin</span>
+                Sesión: <span data-session-user>admin</span>
               </span>
-              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-logout>Cerrar sesion</button>
+              <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-logout>Cerrar sesión</button>
             </div>
           </div>
         </div>
@@ -91,24 +91,24 @@ const languages = ['ES', 'EN', 'PT'];
 
       <section class="container-x pt-9 sm:pt-12">
         <section class="admin-traffic-hero" aria-labelledby="traffic-title">
-          <div class="admin-world-map" aria-label="Mapa politico de conexiones por pais" data-world-map>
-            <div class="admin-map-loading">Cargando mapa politico...</div>
+          <div class="admin-world-map" aria-label="Mapa político de conexiones por país" data-world-map>
+            <div class="admin-map-loading">Cargando mapa político...</div>
           </div>
 
           <div class="admin-traffic-copy">
-            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Trafico global</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Tráfico global</p>
             <h2 id="traffic-title" class="mt-2 font-display text-3xl sm:text-4xl leading-tight">Mapa vivo de conexiones</h2>
             <p class="mt-3 max-w-xl text-sm leading-relaxed text-cream/62">
-              Cada nueva visita respira sobre su pais durante unos segundos y queda agregada para analizar las ultimas horas.
+              Cada nueva visita respira sobre su país durante unos segundos y queda agregada para analizar las últimas horas.
             </p>
 
-            <div class="admin-traffic-stats" aria-label="Resumen de trafico">
+            <div class="admin-traffic-stats" aria-label="Resumen de tráfico">
               <article>
                 <span>Conexiones 24 h</span>
                 <strong data-traffic-total>0</strong>
               </article>
               <article>
-                <span>Paises activos</span>
+                <span>Países activos</span>
                 <strong data-traffic-countries>0</strong>
               </article>
               <article>
@@ -121,18 +121,18 @@ const languages = ['ES', 'EN', 'PT'];
           <aside class="admin-traffic-panel">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Ultimas horas</p>
-                <h3 class="mt-1 font-display text-2xl">Origen del trafico</h3>
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Últimas horas</p>
+                <h3 class="mt-1 font-display text-2xl">Origen del tráfico</h3>
               </div>
               <span class="admin-live-pill" data-traffic-last>En espera</span>
             </div>
 
             <div class="mt-5 space-y-3" data-traffic-bars>
-              <p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay conexiones registradas.</p>
+              <p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavía no hay conexiones registradas.</p>
             </div>
 
             <button type="button" class="admin-expand-button mt-4" data-traffic-toggle aria-expanded="false">
-              Ver porcentaje exacto por pais
+              Ver porcentaje exacto por país
             </button>
             <button type="button" class="admin-demo-button mt-2" data-traffic-demo hidden>
               Cargar muestra local
@@ -174,7 +174,7 @@ const languages = ['ES', 'EN', 'PT'];
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Cobertura de equipo</p>
-                <h2 class="mt-1 font-display text-2xl">Distribucion por servicio</h2>
+                <h2 class="mt-1 font-display text-2xl">Distribución por servicio</h2>
               </div>
               <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-cream/55" data-storage-used>0 KB usados</span>
             </div>
@@ -195,19 +195,19 @@ const languages = ['ES', 'EN', 'PT'];
 
           <aside class="admin-panel p-5">
             <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Actividad</p>
-            <h2 class="mt-1 font-display text-2xl">Resumen rapido</h2>
+            <h2 class="mt-1 font-display text-2xl">Resumen rápido</h2>
 
             <dl class="mt-5 space-y-4">
               <div class="admin-detail-row">
-                <dt>Ultimo perfil actualizado</dt>
-                <dd data-last-upload>Sin cargas todavia</dd>
+                <dt>Último perfil actualizado</dt>
+                <dd data-last-upload>Sin cargas todavía</dd>
               </div>
               <div class="admin-detail-row">
-                <dt>Servicio con mas integrantes</dt>
+                <dt>Servicio con más integrantes</dt>
                 <dd data-top-service>Sin datos</dd>
               </div>
               <div class="admin-detail-row">
-                <dt>Secciones publicas</dt>
+                <dt>Secciones públicas</dt>
                 <dd>Inicio, servicios, sectores, inversionistas y contacto</dd>
               </div>
               <div class="admin-detail-row">
@@ -217,7 +217,7 @@ const languages = ['ES', 'EN', 'PT'];
             </dl>
 
             <div class="mt-6 flex flex-wrap gap-3">
-              <a href="/#servicios" class="btn btn-gold !py-2 !px-4 text-sm">Ver sitio publico</a>
+              <a href="/#servicios" class="btn btn-gold !py-2 !px-4 text-sm">Ver sitio público</a>
               <a href="#gestion-equipo" class="btn btn-outline !py-2 !px-4 text-sm">Gestionar equipo</a>
             </div>
           </aside>
@@ -227,9 +227,9 @@ const languages = ['ES', 'EN', 'PT'];
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="max-w-2xl">
               <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Google Maps</p>
-              <h2 class="mt-1 font-display text-2xl">Destino de los botones de direccion</h2>
+              <h2 class="mt-1 font-display text-2xl">Destino de los botones de dirección</h2>
               <p class="mt-2 text-sm leading-relaxed text-cream/58">
-                Escribe la direccion como la buscarias en Google Maps. El sitio generara el enlace y actualizara los botones de direccion.
+                Escribe la dirección como la buscarías en Google Maps. El sitio generará el enlace y actualizará los botones de dirección.
               </p>
             </div>
             <a
@@ -250,13 +250,13 @@ const languages = ['ES', 'EN', 'PT'];
             data-default-maps-url={social.maps}
           >
             <label class="block">
-              <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Direccion para Google Maps</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Dirección para Google Maps</span>
               <input
                 class="admin-input mt-2"
                 name="address"
                 type="text"
                 autocomplete="street-address"
-                placeholder="Ej: Tres Centurias Esquina Bandera de la Patria, Asuncion"
+                placeholder="Ej: Tres Centurias Esquina Bandera de la Patria, Asunción"
                 data-location-address-input
               />
             </label>
@@ -264,7 +264,7 @@ const languages = ['ES', 'EN', 'PT'];
             <div class="admin-location-preview">
               <span class="admin-location-icon"><Icon name="pin" class="h-5 w-5" /></span>
               <div class="min-w-0">
-                <p class="text-xs font-semibold uppercase tracking-wider text-cream/45">Hipervinculo generado</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-cream/45">Hipervínculo generado</p>
                 <a
                   href={social.maps}
                   target="_blank"
@@ -274,12 +274,12 @@ const languages = ['ES', 'EN', 'PT'];
                 >
                   {social.maps}
                 </a>
-                <p class="mt-1 text-xs text-cream/45" data-location-status>Usando la direccion original del sitio.</p>
+                <p class="mt-1 text-xs text-cream/45" data-location-status>Usando la dirección original del sitio.</p>
               </div>
             </div>
 
             <div class="flex flex-wrap gap-3">
-              <button type="submit" class="btn btn-gold !py-2 !px-4 text-sm">Guardar direccion</button>
+              <button type="submit" class="btn btn-gold !py-2 !px-4 text-sm">Guardar dirección</button>
               <button type="button" class="btn btn-outline !py-2 !px-4 text-sm" data-location-reset>Restaurar original</button>
             </div>
           </form>
@@ -289,11 +289,11 @@ const languages = ['ES', 'EN', 'PT'];
       <section id="gestion-equipo" class="container-x pb-12 sm:pb-16">
         <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Gestion de equipo</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Gestión de equipo</p>
             <h2 class="mt-1 font-display text-3xl">Perfiles profesionales</h2>
           </div>
           <p class="max-w-xl text-sm leading-relaxed text-cream/55">
-            Edita la foto, el nombre, el cargo y la descripcion de cada integrante. Estas fichas se reutilizan en los servicios donde esten asignadas.
+            Edita la foto, el nombre, el cargo y la descripción de cada integrante. Estas fichas se reutilizan en los servicios donde estén asignadas.
           </p>
         </div>
 
@@ -317,15 +317,15 @@ const languages = ['ES', 'EN', 'PT'];
                 </label>
                 <label class="block">
                   <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Cargo</span>
-                  <input class="admin-input mt-2" name="role" type="text" placeholder="Contador Publico" />
+                  <input class="admin-input mt-2" name="role" type="text" placeholder="Contador Público" />
                 </label>
                 <label class="block">
                   <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Especialidad</span>
-                  <input class="admin-input mt-2" name="specialty" type="text" placeholder="Tributacion y auditoria" />
+                  <input class="admin-input mt-2" name="specialty" type="text" placeholder="Tributación y auditoría" />
                 </label>
                 <label class="block sm:col-span-2">
-                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Descripcion</span>
-                  <textarea class="admin-input mt-2 min-h-32 resize-y" name="description" required placeholder="Resumen profesional que se vera en la web publica."></textarea>
+                  <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Descripción</span>
+                  <textarea class="admin-input mt-2 min-h-32 resize-y" name="description" required placeholder="Resumen profesional que se verá en la web pública."></textarea>
                 </label>
                 <label class="block sm:col-span-2">
                   <span class="text-xs font-semibold uppercase tracking-wider text-cream/50">Imagen</span>
@@ -341,7 +341,7 @@ const languages = ['ES', 'EN', 'PT'];
               <p class="text-xs font-semibold uppercase tracking-wider text-gold-300">Asignaciones</p>
               <h3 class="mt-1 font-display text-2xl">Integrantes por servicio</h3>
               <p class="mt-2 text-sm leading-relaxed text-cream/55">
-                Selecciona por nombre los integrantes que corresponden a cada servicio y revisa como queda la ficha publica.
+                Selecciona por nombre los integrantes que corresponden a cada servicio y revisa cómo queda la ficha pública.
               </p>
             </div>
             <div class="mt-5 grid gap-5" data-service-assignment-list>
@@ -558,7 +558,7 @@ const languages = ['ES', 'EN', 'PT'];
       svg.removeAttribute('width');
       svg.removeAttribute('height');
       svg.setAttribute('role', 'img');
-      svg.setAttribute('aria-label', 'Mapamundi politico con paises reales');
+      svg.setAttribute('aria-label', 'Mapamundi político con países reales');
       svg.querySelectorAll('path[id], g[id]').forEach((node) => {
         const code = node.id?.toUpperCase();
         if (!/^[A-Z]{2}$/.test(code)) return;
@@ -570,7 +570,7 @@ const languages = ['ES', 'EN', 'PT'];
       mapReady = true;
       renderTrafficDashboard();
     } catch {
-      container.innerHTML = '<div class="admin-map-loading">No se pudo cargar el mapa politico.</div>';
+      container.innerHTML = '<div class="admin-map-loading">No se pudo cargar el mapa político.</div>';
     }
   };
 
@@ -660,7 +660,7 @@ const languages = ['ES', 'EN', 'PT'];
     if (bars) {
       bars.innerHTML = topCountries.length
         ? topCountries.map((entry) => trafficBarMarkup(entry, maxCount)).join('')
-        : '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay conexiones registradas.</p>';
+        : '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavía no hay conexiones registradas.</p>';
     }
 
     const detail = document.querySelector('[data-traffic-detail]');
@@ -726,7 +726,7 @@ const languages = ['ES', 'EN', 'PT'];
     if (locationOpen) locationOpen.href = location.mapsUrl;
     if (locationStatus) {
       locationStatus.textContent = isDefault
-        ? 'Usando la direccion original del sitio.'
+        ? 'Usando la dirección original del sitio.'
         : `Guardado en el servidor - ${formatDate(location.updatedAt)}`;
     }
   };
@@ -755,7 +755,7 @@ const languages = ['ES', 'EN', 'PT'];
     setText('[data-top-service]', topService.count ? `${topService.name} (${topService.count})` : 'Sin datos');
     setText(
       '[data-last-upload]',
-      lastUpload ? `${lastUpload.name} - ${formatDate(lastUpload.updatedAt || lastUpload.uploadedAt)}` : 'Sin cargas todavia'
+      lastUpload ? `${lastUpload.name} - ${formatDate(lastUpload.updatedAt || lastUpload.uploadedAt)}` : 'Sin cargas todavía'
     );
     setText('[data-profile-library-count]', `${teamProfiles.length} ${teamProfiles.length === 1 ? 'perfil' : 'perfiles'}`);
 
@@ -789,7 +789,7 @@ const languages = ['ES', 'EN', 'PT'];
     list.innerHTML = '';
 
     if (!teamProfiles.length) {
-      list.innerHTML = '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavia no hay integrantes cargados.</p>';
+      list.innerHTML = '<p class="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-cream/45">Todavía no hay integrantes cargados.</p>';
       return;
     }
 
@@ -799,7 +799,7 @@ const languages = ['ES', 'EN', 'PT'];
       const form = fragment.querySelector('[data-profile-form]');
       card.dataset.profileId = profile.id;
       form.dataset.profileId = profile.id;
-      fragment.querySelector('[data-profile-image]').src = profile.imageUrl || '/images/logo-icon.png';
+      fragment.querySelector('[data-profile-image]').src = profile.imageUrl || '/images/logoAVC.jpeg';
       fragment.querySelector('[data-profile-image]').alt = profile.name;
       form.elements.name.value = profile.name || '';
       form.elements.role.value = profile.role || '';
@@ -906,7 +906,7 @@ const languages = ['ES', 'EN', 'PT'];
     const nextExpanded = detail.hasAttribute('hidden');
     detail.toggleAttribute('hidden', !nextExpanded);
     button.setAttribute('aria-expanded', String(nextExpanded));
-    button.textContent = nextExpanded ? 'Ocultar detalle por pais' : 'Ver porcentaje exacto por pais';
+    button.textContent = nextExpanded ? 'Ocultar detalle por país' : 'Ver porcentaje exacto por país';
   });
 
   document.querySelector('[data-traffic-demo]')?.addEventListener('click', showLocalTrafficSample);
@@ -984,7 +984,7 @@ const languages = ['ES', 'EN', 'PT'];
     const address = locationAddressInput?.value.trim();
 
     if (!address) {
-      alert('Escribe una direccion para generar el enlace de Google Maps.');
+      alert('Escribe una dirección para generar el enlace de Google Maps.');
       locationAddressInput?.focus();
       return;
     }

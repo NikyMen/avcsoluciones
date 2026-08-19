@@ -274,8 +274,14 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
       <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-ink-950 to-transparent z-10"></div>
       <div class="marquee-track gap-5">
         {[...t.allies.items, ...t.allies.items].map((a) => (
-          <div class="allies-logo-card shrink-0 grid place-items-center h-24 w-52 rounded-2xl border border-white/10 bg-white/[0.04]">
-            <img src={a.logo} alt={a.name} loading="lazy" decoding="async" />
+          <div class="allies-logo-card shrink-0 grid place-items-center h-28 w-56 rounded-2xl border border-white/10 bg-white/[0.04]">
+            <img
+              src={a.logo}
+              alt={a.name}
+              loading="lazy"
+              decoding="async"
+              class:list={['allies-logo-image', a.logo.includes('logoCD') && 'is-native-logo']}
+            />
           </div>
         ))}
       </div>
@@ -476,23 +482,31 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
   }
 
   .allies-logo-card {
-    padding: 1.15rem 1.4rem;
+    overflow: hidden;
+    padding: 1rem 1.3rem;
     transition:
       border-color 0.22s ease,
       background 0.22s ease,
       transform 0.22s ease;
   }
 
-  .allies-logo-card img {
-    max-width: 100%;
-    max-height: 100%;
+  .allies-logo-image {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    filter: grayscale(1) brightness(1.14);
-    opacity: 0.78;
+    object-position: center;
+    filter: grayscale(1) brightness(0) invert(1);
+    opacity: 0.68;
     transition:
       filter 0.22s ease,
       opacity 0.22s ease,
       transform 0.22s ease;
+  }
+
+  .allies-logo-image.is-native-logo {
+    filter: grayscale(1) brightness(1.35) contrast(1.08);
+    mix-blend-mode: screen;
   }
 
   .allies-logo-card:hover {
@@ -501,8 +515,9 @@ const teamPath = lang === 'es' ? '/equipo' : lang === 'en' ? '/en/team' : '/pt/e
     transform: translateY(-2px);
   }
 
-  .allies-logo-card:hover img {
+  .allies-logo-card:hover .allies-logo-image {
     filter: none;
+    mix-blend-mode: normal;
     opacity: 1;
     transform: scale(1.02);
   }

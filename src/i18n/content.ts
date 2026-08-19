@@ -217,11 +217,11 @@ const es: Content = {
     lead: 'Construimos una red de alianzas con organizaciones de sólida trayectoria y relevancia en el mercado.',
     note: 'Una red de empresas aliadas que complementan nuestras soluciones para acompañar mejor a cada cliente.',
     items: [
-      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
-      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
-      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Proyecta', logo: '/images/aliados/processed/logoProyecta.png' },
+      { name: 'Infinita', logo: '/images/aliados/processed/logoInfinita.png' },
+      { name: 'Cuántico', logo: '/images/aliados/processed/logoCuantico.png' },
       { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
-      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+      { name: 'ALV Flores', logo: '/images/aliados/processed/logoAlvFlores.png' },
     ],
   },
   contact: {
@@ -359,11 +359,11 @@ const en: Content = {
     lead: 'We build a network of alliances with organizations of solid track record and market relevance.',
     note: 'A network of partner companies that complements our solutions to better support every client.',
     items: [
-      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
-      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
-      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Proyecta', logo: '/images/aliados/processed/logoProyecta.png' },
+      { name: 'Infinita', logo: '/images/aliados/processed/logoInfinita.png' },
+      { name: 'Cuántico', logo: '/images/aliados/processed/logoCuantico.png' },
       { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
-      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+      { name: 'ALV Flores', logo: '/images/aliados/processed/logoAlvFlores.png' },
     ],
   },
   contact: {
@@ -501,11 +501,11 @@ const pt: Content = {
     lead: 'Construímos uma rede de alianças com organizações de sólida trajetória e relevância no mercado.',
     note: 'Uma rede de empresas parceiras que complementa nossas soluções para acompanhar melhor cada cliente.',
     items: [
-      { name: 'Proyecta', logo: '/images/aliados/logoProyecta.jpeg' },
-      { name: 'Infinita', logo: '/images/aliados/logoInfinita.PNG' },
-      { name: 'Cuántico', logo: '/images/aliados/logoCuantico.PNG' },
+      { name: 'Proyecta', logo: '/images/aliados/processed/logoProyecta.png' },
+      { name: 'Infinita', logo: '/images/aliados/processed/logoInfinita.png' },
+      { name: 'Cuántico', logo: '/images/aliados/processed/logoCuantico.png' },
       { name: 'Consultoría Digital', logo: '/images/aliados/logoCD.webp' },
-      { name: 'ALV Flores', logo: '/images/aliados/logoAlvFlores.jpeg' },
+      { name: 'ALV Flores', logo: '/images/aliados/processed/logoAlvFlores.png' },
     ],
   },
   contact: {

@@ -40,7 +40,7 @@ const flagImages: Record<Lang, string> = {
 >
   <div class="container-x">
     <div
-      class="mt-3 flex items-center justify-between gap-4 rounded-2xl px-4 py-2.5 transition-all duration-300 backdrop-blur-md"
+      class="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-2.5 text-gold-600 shadow-soft transition-all duration-300"
       data-bar
     >
       <!-- Logo -->
@@ -51,7 +51,7 @@ const flagImages: Record<Lang, string> = {
           data-logo-text
           translate="no"
         >
-          <span>Soluciones </span><span class="text-gold-400">Empresariales</span>
+          <span>Soluciones </span><span class="text-gold-500">Empresariales</span>
         </span>
       </a>
 
@@ -60,7 +60,7 @@ const flagImages: Record<Lang, string> = {
         <div class="nav-dropdown" data-about-dropdown>
           <a
             href={`${base}/#nosotros`}
-            class="nav-dropdown-trigger text-sm font-medium opacity-80 hover:opacity-100 hover:text-gold-400 transition"
+            class="nav-dropdown-trigger text-sm font-semibold text-gold-600 hover:text-gold-500 transition"
             aria-haspopup="true"
           >
             {t.nav.nosotros}
@@ -73,7 +73,7 @@ const flagImages: Record<Lang, string> = {
           </div>
         </div>
         {links.map((l) => (
-          <a href={l.href} class="text-sm font-medium opacity-80 hover:opacity-100 hover:text-gold-400 transition">{l.label}</a>
+          <a href={l.href} class="text-sm font-semibold text-gold-600 hover:text-gold-500 transition">{l.label}</a>
         ))}
       </nav>
 
@@ -82,7 +82,7 @@ const flagImages: Record<Lang, string> = {
         <div class="relative" data-lang>
           <button
             type="button"
-            class="flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-sm font-medium hover:border-gold-400/60 transition"
+            class="flex items-center gap-1.5 rounded-full border border-gold-600/30 px-3 py-1.5 text-sm font-medium hover:border-gold-500 transition"
             data-lang-btn
             aria-haspopup="true"
             aria-expanded="false"
@@ -95,13 +95,13 @@ const flagImages: Record<Lang, string> = {
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div
-            class="absolute right-0 mt-2 w-44 origin-top-right rounded-xl border border-ink-700/40 bg-ink-900 text-cream shadow-soft p-1.5 opacity-0 invisible scale-95 transition-all"
+            class="absolute right-0 mt-2 w-44 origin-top-right rounded-xl border border-gold-600/20 bg-white text-gold-600 shadow-soft p-1.5 opacity-0 invisible scale-95 transition-all"
             data-lang-menu
           >
             {languages.map((l) => (
               <a
                 href={localizedPath(l.code)}
-                class:list={["flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-white/10 transition", l.code === lang && 'text-gold-400']}
+                class:list={["flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-gold-50 transition", l.code === lang && "font-semibold text-gold-500"]}
               >
                 <span class="flag-frame" aria-hidden="true">
                   <img src={flagImages[l.code]} alt="" class="flag-icon" />
@@ -114,7 +114,7 @@ const flagImages: Record<Lang, string> = {
         <a href={`${base}/#contacto`} class="hidden sm:inline-flex btn btn-gold !py-2 !px-4 text-sm">{t.cta.contact}</a>
 
         <!-- Mobile toggle -->
-        <button type="button" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition" data-menu-btn aria-label="Menu">
+        <button type="button" class="lg:hidden p-2 rounded-lg hover:bg-gold-50 transition" data-menu-btn aria-label="Menu">
           <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
@@ -122,9 +122,9 @@ const flagImages: Record<Lang, string> = {
 
     <!-- Mobile menu -->
     <div class="lg:hidden overflow-hidden max-h-0 transition-all duration-300" data-mobile-menu>
-      <nav class="mt-2 rounded-2xl bg-ink-900 text-cream p-3 shadow-soft flex flex-col">
+      <nav class="mt-2 rounded-2xl bg-white text-gold-600 p-3 shadow-soft flex flex-col">
         {mobileLinks.map((l) => (
-          <a href={l.href} class="px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-white/10 transition" data-mobile-link>{l.label}</a>
+          <a href={l.href} class="px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-gold-50 hover:text-gold-500 transition" data-mobile-link>{l.label}</a>
         ))}
         <a href={`${base}/#contacto`} class="btn btn-gold mt-2 justify-center" data-mobile-link>{t.cta.contact}</a>
       </nav>
@@ -134,20 +134,12 @@ const flagImages: Record<Lang, string> = {
 
 <script>
   const header = document.querySelector('[data-header]') as HTMLElement;
-  const bar = document.querySelector('[data-bar]') as HTMLElement;
   const navLinks = document.querySelectorAll('[data-nav] a');
   const logoText = document.querySelector('[data-logo-text]') as HTMLElement;
 
   const applyScrolled = (scrolled: boolean) => {
-    if (scrolled) {
-      bar.classList.add('bg-ink-900/90', 'shadow-soft', 'text-cream');
-      header.classList.add('scrolled');
-    } else {
-      bar.classList.remove('bg-ink-900/90', 'shadow-soft');
-    }
+    header.classList.toggle('scrolled', scrolled);
   };
-  // Start in "over-hero" (light text) mode
-  bar.classList.add('text-white');
   const onScroll = () => applyScrolled(window.scrollY > 24);
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -224,8 +216,7 @@ const flagImages: Record<Lang, string> = {
   .nav-dropdown:hover,
   .nav-dropdown:focus-within {
     border-radius: 1rem 1rem 0 0;
-    background: rgba(17, 17, 24, 0.9);
-    backdrop-filter: blur(14px);
+    background: var(--color-gold-50);
   }
 
   .nav-dropdown-trigger {
@@ -255,9 +246,8 @@ const flagImages: Record<Lang, string> = {
     width: 100%;
     overflow: hidden;
     border-radius: 0 0 1rem 1rem;
-    background: rgba(17, 17, 24, 0.9);
-    box-shadow: 0 18px 46px -34px rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(14px);
+    background: var(--color-gold-50);
+    box-shadow: 0 18px 46px -34px rgba(0, 0, 0, 0.45);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-0.35rem);
@@ -280,7 +270,7 @@ const flagImages: Record<Lang, string> = {
     align-items: center;
     justify-content: flex-start;
     padding: 0.5rem 0.75rem;
-    color: rgba(247, 245, 240, 0.8);
+    color: var(--color-gold-600);
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1;
@@ -291,7 +281,7 @@ const flagImages: Record<Lang, string> = {
 
   .nav-dropdown-menu a:hover,
   .nav-dropdown-menu a:focus-visible {
-    color: var(--color-gold-300);
+    color: var(--color-gold-500);
     opacity: 1;
     outline: none;
   }

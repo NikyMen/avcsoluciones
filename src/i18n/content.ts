@@ -112,8 +112,10 @@ export interface Content {
 const contact = {
   whatsappValue: '+595 991 437 021',
   emailValue: 'info@avcsoluciones.com.py',
-  addressValue: 'Tres Centurias Esquina Bandera de la Patria',
+  addressValue: 'Libertad entre Cerro Corá y Nicasio Villalba - Fernando de la Mora',
   whatsappHref: 'https://wa.me/595991437021',
+  // Pin en la entrada de la galería Paseo Libertad (el negocio aún no tiene ficha propia en Google Maps)
+  mapsCoords: '-25.309447,-57.530367',
 };
 
 const es: Content = {
@@ -552,7 +554,7 @@ export const social = {
   facebook: 'https://web.facebook.com/profile.php?id=61577989658195',
   linkedin: 'https://www.linkedin.com/company/108613748/',
   whatsapp: contact.whatsappHref,
-  maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.addressValue)}`,
+  maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.mapsCoords)}`,
 };
 
 export function getContent(lang: Lang): Content {
